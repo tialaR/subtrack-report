@@ -1,0 +1,111 @@
+import {
+  FiTrash,
+  FiTrash2,
+  FiRefreshCcw,
+  FiRotateCw,
+  FiPlus,
+  FiEdit,
+  FiX,
+  FiCheck,
+  FiCheckCircle,
+  FiArrowLeft,
+  FiArrowRight,
+  FiChevronDown,
+  FiChevronUp,
+  FiChevronsDown,
+  FiChevronsRight,
+  FiChevronsUp,
+  FiChevronsLeft,
+  FiUpload,
+  FiDownload,
+  FiSearch,
+  FiZoomIn,
+  FiZoomOut,
+  FiUser,
+  FiSettings,
+  FiMail,
+  FiPhone,
+  FiCopy,
+  FiSave,
+  FiEye,
+  FiEyeOff,
+  FiLock,
+  FiUnlock,
+  FiInfo,
+  FiAlertCircle,
+  FiAlertTriangle,
+  FiCornerUpLeft,
+  FiCornerUpRight,
+  FiCamera,
+  FiMove,
+  FiHome,
+  FiMap,
+  FiMapPin,
+  FiCloudRain,
+  FiCompass,
+  FiGlobe,
+} from 'react-icons/fi';
+import type { IconType } from 'react-icons';
+
+type IconMap = {
+  [key: string]: IconType;
+};
+
+export const iconMap: IconMap = {
+  // Ações básicas
+  delete: FiTrash,
+  deleteAlt: FiTrash2,
+  refresh: FiRefreshCcw,
+  rotate: FiRotateCw,
+  add: FiPlus,
+  edit: FiEdit,
+  close: FiX,
+  confirm: FiCheck,
+  confirmCircle: FiCheckCircle,
+  save: FiSave,
+  upload: FiUpload,
+  download: FiDownload,
+  copy: FiCopy,
+  camera: FiCamera,
+  move: FiMove,
+  search: FiSearch,
+
+  // Navegação
+  back: FiArrowLeft,
+  next: FiArrowRight,
+  up: FiChevronUp,
+  down: FiChevronDown,
+  chevronsUp: FiChevronsUp,
+  chevronsDown: FiChevronsDown,
+  chevronsLeft: FiChevronsLeft,
+  chevronsRight: FiChevronsRight,
+  cornerBack: FiCornerUpLeft,
+  cornerForward: FiCornerUpRight,
+
+  // Zoom
+  zoomIn: FiZoomIn,
+  zoomOut: FiZoomOut,
+
+  // Usuário e sistema
+  user: FiUser,
+  settings: FiSettings,
+  mail: FiMail,
+  phone: FiPhone,
+  lock: FiLock,
+  unlock: FiUnlock,
+
+  // Visibilidade e status
+  show: FiEye,
+  hide: FiEyeOff,
+  info: FiInfo,
+  alert: FiAlertCircle,
+  warning: FiAlertTriangle,
+
+  // Localização / Mapa
+  home: FiHome,
+  map: FiMap,
+  pin: FiMapPin,
+  globe: FiGlobe,
+  compass: FiCompass,
+  rain: FiCloudRain,
+};
