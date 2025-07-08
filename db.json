@@ -1,0 +1,37 @@
+{
+  "general_map": {
+    "id": "uuid-1",
+    "title": "Mapa Geral",
+    "content": "MAPA DE LOCALIZAÇÃO GERAL – DETALHAMENTO DOS LOCAIS INSPECIONADOS",
+    "image": "/images/generalMap.png"
+  },
+  "records_day": [],
+  "tabulation_day": {
+    "id": "260bd3f6-0681-4d3a-90a6-77a85366b8fe",
+    "title": "Tabulação do Dia",
+    "content": "Previsão meteorológica por hora com base na localização.",
+    "latitude": -3.119,
+    "longitude": -60.0217,
+    "timezone": "America/Manaus",
+    "image": "",
+    "current_date": "segunda-feira, 28 de julho de 2025"
+  },
+  "general_map_screenshot_markers": {
+    "id": "uuid-4",
+    "title": "",
+    "content": "",
+    "screenshot_markers": [
+      {
+        "id": "uuid-4a",
+        "title": "",
+        "image": "",
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "timestamp": 0,
+        "is_new_position": false
+      }
+    ]
+  },
+  "sub_maps": []
+}
