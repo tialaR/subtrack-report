@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "strict": true,
+      "skipLibCheck": true,
+  
+      "baseUrl": ".",                    
+      "types": ["vite/client", "node"],   
+  
+      "paths": {
+        "@/*":          ["src/*"],          
+  
+        "@types/*":     ["src/@types/*"],
+        "@assets/*":    ["src/assets/*"],
+        "@components/*":["src/components/*"],
+        "@contexts/*":  ["src/contexts/*"],
+        "@hooks/*":     ["src/hooks/*"],
+        "@pages/*":     ["src/pages/*"],
+        "@layouts/*":   ["src/layouts/*"],
+        "@routes/*":    ["src/routes/*"],
+        "@providers/*": ["src/providers/*"],
+        "@services/*":  ["src/services/*"],
+        "@styles/*":    ["src/styles/*"],
+        "@utils/*":     ["src/utils/*"]
+      }
+    }
+  }
+  
