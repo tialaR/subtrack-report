@@ -8,6 +8,7 @@ import { usePostRecordDay } from "@services/hooks/recordsDay/usePostRecordDay";
 import { useDeleteRecordDayById } from "@services/hooks/recordsDay/useDeleteRecordDayById";
 import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
 import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
+import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
 import type { RecordDay } from "@services/hooks/recordsDay/types";
 import * as S from "./styles";
@@ -17,6 +18,7 @@ const MAX_IMAGES = 8;
 const RecordsOfDay: React.FC = () => {
   const { recordsDay, getRecordsDay } = useGetRecordsDay();
   const { postRecordDay } = usePostRecordDay();
+  const { patchRecordDay } = usePatchRecordDay();
   const { deleteRecordDayById } = useDeleteRecordDayById();
   const { deleteAllRecordsDay } = useDeleteAllRecordsDay();
 
@@ -58,8 +60,8 @@ const RecordsOfDay: React.FC = () => {
     file?: File;
   }) => {
     if (!file) return;
-    await deleteRecordDayById(id);
-    handleAddImage(file);
+    const base64 = await fileToBase64(file);
+    await patchRecordDay({ id, payload: { image: base64 } });
     refresh();
   };
 
