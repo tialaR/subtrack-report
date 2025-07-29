@@ -4,14 +4,17 @@ import { MainDescription } from "@components/MainDescription";
 import { ImageGridUploader } from "@components/ImageGridUploader";
 import { StyleButtonsWrapper } from "@styles/StyleComponets";
 import { Button } from "@components/Button";
+import { useModal } from "@hooks/useModal";
 import { usePostRecordDay } from "@services/hooks/recordsDay/usePostRecordDay";
 import { useDeleteRecordDayById } from "@services/hooks/recordsDay/useDeleteRecordDayById";
 import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
 import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
 import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
+import { useRecordDayCapture } from "@services/hooks/recordsDay/useRecordDayCapture";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
 import type { RecordDay } from "@services/hooks/recordsDay/types";
 import * as S from "./styles";
+import { RecordDayPreview } from "./RecordDayPreview";
 
 const MAX_IMAGES = 8;
 
@@ -21,9 +24,13 @@ const RecordsOfDay: React.FC = () => {
   const { patchRecordDay } = usePatchRecordDay();
   const { deleteRecordDayById } = useDeleteRecordDayById();
   const { deleteAllRecordsDay } = useDeleteAllRecordsDay();
+  const { containerRef, hasPersisted, handlePersist } = useRecordDayCapture();
+
+  const { Modal, openModal, createModal } = useModal();
 
   const hasMounted = useRef(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [renderHiddenPreview, setRenderHiddenPreview] = useState(false);
 
   useEffect(() => {
     if (!hasMounted.current) {
@@ -75,53 +82,78 @@ const RecordsOfDay: React.FC = () => {
     refresh();
   };
 
+  const handleGenerateAndCapture = async () => {
+    // Renderiza o componente ocultamente
+    setRenderHiddenPreview(true);
+    await new Promise((r) => setTimeout(r, 100));
+    await handlePersist();
+    createModal({
+      size: "large",
+      children: <RecordDayPreview ref={containerRef} recordsDay={recordsDay} />,
+    });
+  };
+
   return (
-    <S.Container>
-      <div>
-        <MainDescription>
-          {"É necessário inserir no mínimo uma imagem e no máximo oito imagens para continuar."?.toUpperCase()}
-        </MainDescription>
+    <>
+      <S.Container>
+        <div>
+          <MainDescription>
+            {"É necessário inserir no mínimo uma imagem e no máximo oito imagens para continuar."?.toUpperCase()}
+          </MainDescription>
 
-        <StyleButtonsWrapper>
-          <Button
-            title="Capturar imagens"
-            variant="primary"
-            iconType="camera"
-            showIcon
-            onClick={() => {}}
-          >
-            Capturar imagem
-          </Button>
-          <Button
-            title="Visualizar captura"
-            variant="secondary"
-            iconType="show"
-            showIcon
-            // disabled
-            onClick={() => {}}
-          >
-            Visualizar captura
-          </Button>
-          <Button
-            title="Excluir todas imagens"
-            variant="secondary"
-            showIcon
-            iconType="delete"
-            onClick={handleDeleteAllRecords}
-          >
-            Excluir todas imagens
-          </Button>
-        </StyleButtonsWrapper>
-      </div>
+          <StyleButtonsWrapper>
+            <Button
+              title="Capturar imagens"
+              variant="primary"
+              iconType="camera"
+              showIcon
+              onClick={handleGenerateAndCapture}
+            >
+              Capturar imagem
+            </Button>
+            <Button
+              title="Visualizar captura"
+              variant="secondary"
+              iconType="show"
+              showIcon
+              disabled={!hasPersisted}
+              onClick={openModal}
+            >
+              Visualizar captura
+            </Button>
+            <Button
+              title="Excluir todas imagens"
+              variant="secondary"
+              showIcon
+              iconType="delete"
+              onClick={handleDeleteAllRecords}
+            >
+              Excluir todas imagens
+            </Button>
+          </StyleButtonsWrapper>
+        </div>
 
-      <ImageGridUploader
-        recordsDay={recordsDay}
-        onAddImage={handleAddImage}
-        onReplaceImage={handleReplaceImage}
-        onDeleteImage={handleDeleteRecordDayById}
-        maxImages={MAX_IMAGES}
-      />
-    </S.Container>
+        <ImageGridUploader
+          recordsDay={recordsDay}
+          onAddImage={handleAddImage}
+          onReplaceImage={handleReplaceImage}
+          onDeleteImage={handleDeleteRecordDayById}
+          maxImages={MAX_IMAGES}
+        />
+      </S.Container>
+      {Modal}
+
+      {/* Renderização invisível para captura */}
+      {renderHiddenPreview && (
+        <div style={{ position: "absolute", top: -9999, left: -9999 }}>
+          <RecordDayPreview
+            ref={containerRef}
+            recordsDay={recordsDay}
+            isHidden
+          />
+        </div>
+      )}
+    </>
   );
 };
 
