@@ -13,3 +13,6 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
    */
   showLoadingOverlay?: boolean;
 }
+// Quando isLoading={true} e showLoadingOverlay={true}, o botão exibe um efeito de 
+// skeleton animado por cima do ícone, sem esconder o conteúdo visual.
+// O botão é desativado automaticamente durante o carregamento.
