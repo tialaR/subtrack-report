@@ -44,11 +44,15 @@ const RecordsOfDay: React.FC = () => {
   const { Modal, openModal, createModal } = useModal();
 
   const hasMounted = useRef(false);
+
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [renderHiddenPreview, setRenderHiddenPreview] = useState(false);
 
+  const isFirstRender = isRecordsDayLoading && refreshTrigger === 0;
+
   const hasRecordsDayImages =
     recordsDay && recordsDay.length > 0 && !isRecordsDayLoading;
+  const showMaxLimit = recordsDay?.length === MAX_IMAGES;
 
   const isPreviewEmpty = useMemo(
     () => !isRecordsDayPreviewLoading && recordsDayPreview.length === 0,
@@ -84,17 +88,6 @@ const RecordsOfDay: React.FC = () => {
       });
     }
   }, [hasRecordsDayImages]);
-
-  // useEffect(() => {
-  //   const removeRecordsDayPreview = async () => {
-  //     if (recordsDay?.length === 0 && !!recordsDayPreview?.[0]?.image) {
-  //       await deleteRecordsDayPreviewById(recordsDayPreview?.[0]?.id);
-  //       refresh();
-  //     }
-  //   };
-
-  //   removeRecordsDayPreview();
-  // }, [recordsDay.length, recordsDayPreview]);
 
   const refresh = () => setRefreshTrigger((prev) => prev + 1);
 
@@ -194,7 +187,7 @@ const RecordsOfDay: React.FC = () => {
     );
   };
 
-  if (isRecordsDayLoading || isRecordsDayPreviewLoading) {
+  if (isFirstRender) {
     return (
       <>
         {renderHeader()}
@@ -230,10 +223,16 @@ const RecordsOfDay: React.FC = () => {
           onDeleteImage={handleDeleteRecordDayById}
           maxImages={MAX_IMAGES}
         />
+        {showMaxLimit && (
+          <S.Message>
+            VOCÊ ATINGIU 0 LIMITE MÁXIMO DE IMAGENS PARA GERAR OS REGISTROS DO
+            DIA!
+          </S.Message>
+        )}
       </S.Container>
       {Modal}
 
-      {/* Renderização invisível para captura */}
+      {/* Renderização invisível para captura dos registros do dia */}
       {renderHiddenPreview && (
         <div style={{ position: "absolute", top: -9999, left: -9999 }}>
           <RecordDayPreview

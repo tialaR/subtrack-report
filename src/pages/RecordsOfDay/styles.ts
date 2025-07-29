@@ -11,6 +11,11 @@ export const Description = styled.span`
   color: ${({ theme }) => theme.colors.grey[900]};
 `;
 
+export const Message = styled.span`
+  ${typographyPreset[4]}
+  color: ${({ theme }) => theme.colors.grey[900]};
+  margin-top: ${({ theme }) => theme.spacing[400]};
+`;
 
 /* Record day preview */
 export const PreviewWrapper = styled.div`

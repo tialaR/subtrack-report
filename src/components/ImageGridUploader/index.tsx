@@ -12,7 +12,7 @@ export const ImageGridUploader: React.FC<ImageGridUploaderProps> = ({
   maxImages,
 }) => {
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const canAddMoreImages = recordsDay?.length < maxImages;
+  const canAddMoreImages = recordsDay.length < maxImages;
 
   return (
     <S.ImageBoxWrapper>
