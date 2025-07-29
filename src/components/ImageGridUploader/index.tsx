@@ -9,19 +9,15 @@ export const ImageGridUploader: React.FC<ImageGridUploaderProps> = ({
   onAddImage,
   onReplaceImage,
   onDeleteImage,
-  maxImages = 4,
+  maxImages,
 }) => {
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const canAddMoreImages = recordsDay.length < maxImages;
 
-  const handleReplaceClick = (id: string) => {
-    inputRefs.current[id]?.click();
-  };
-
   return (
     <S.ImageBoxWrapper>
-      {recordsDay.map((record, index) => (
-        <div key={record.id}>
+      {recordsDay?.map((record, index) => (
+        <div key={record?.id}>
           <input
             type="file"
             accept="image/*"
@@ -38,7 +34,7 @@ export const ImageGridUploader: React.FC<ImageGridUploaderProps> = ({
             title={record.title}
             hasImage={!!record.image}
             onDelete={() => onDeleteImage(record.id)}
-            onReplaceClick={() => handleReplaceClick(record.id)}
+            onReplace={() => inputRefs.current[record.id]?.click()}
           />
         </div>
       ))}

@@ -7,20 +7,16 @@ import { Button } from "@components/Button";
 import { usePostRecordDay } from "@services/hooks/recordsDay/usePostRecordDay";
 import { useDeleteRecordDayById } from "@services/hooks/recordsDay/useDeleteRecordDayById";
 import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
-import { useDeleteAllRecordsDay } from '@services/hooks/recordsDay/useDeleteAllRecordsDay';
-import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
-import { usePutRecordDayById } from "@services/hooks/recordsDay/usePutRecordDayById";
+import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
 import type { RecordDay } from "@services/hooks/recordsDay/types";
 import * as S from "./styles";
 
-const MAX_IMAGES = 4;
+const MAX_IMAGES = 8;
 
 const RecordsOfDay: React.FC = () => {
   const { recordsDay, getRecordsDay } = useGetRecordsDay();
   const { postRecordDay } = usePostRecordDay();
-  const { putRecordDayById } = usePutRecordDayById();
-  const { patchRecordDay } = usePatchRecordDay();
   const { deleteRecordDayById } = useDeleteRecordDayById();
   const { deleteAllRecordsDay } = useDeleteAllRecordsDay();
 
@@ -51,18 +47,19 @@ const RecordsOfDay: React.FC = () => {
       image: base64,
     };
     await postRecordDay(newRecord);
-    refresh(); 
-  };
-
-  const handleReplaceImage = async ({ id, file }: { id: string; file?: File }) => {
-    if (!file) return;
-    const base64 = await fileToBase64(file);
-    await patchRecordDay({ id, payload: { image: base64 } });
     refresh();
   };
 
-  const handlePutRecordDayById = async ({ id, payload }: { id: string, payload: RecordDay }) => {
-    await putRecordDayById({ id, payload });
+  const handleReplaceImage = async ({
+    id,
+    file,
+  }: {
+    id: string;
+    file?: File;
+  }) => {
+    if (!file) return;
+    await deleteRecordDayById(id);
+    handleAddImage(file);
     refresh();
   };
 
@@ -75,23 +72,42 @@ const RecordsOfDay: React.FC = () => {
     await deleteAllRecordsDay();
     refresh();
   };
-  
+
   return (
     <S.Container>
       <div>
         <MainDescription>
-          {"É necessário inserir no mínimo uma imagem e no máximo quatro imagens para continuar."?.toUpperCase()}
+          {"É necessário inserir no mínimo uma imagem e no máximo oito imagens para continuar."?.toUpperCase()}
         </MainDescription>
 
         <StyleButtonsWrapper>
           <Button
-            title="Excluir todas as imagens"
+            title="Capturar imagens"
+            variant="primary"
+            iconType="camera"
+            showIcon
+            onClick={() => {}}
+          >
+            Capturar imagem
+          </Button>
+          <Button
+            title="Visualizar captura"
+            variant="secondary"
+            iconType="show"
+            showIcon
+            // disabled
+            onClick={() => {}}
+          >
+            Visualizar captura
+          </Button>
+          <Button
+            title="Excluir todas imagens"
             variant="secondary"
             showIcon
             iconType="delete"
             onClick={handleDeleteAllRecords}
           >
-            Excluir todas as imagens
+            Excluir todas imagens
           </Button>
         </StyleButtonsWrapper>
       </div>
@@ -100,7 +116,6 @@ const RecordsOfDay: React.FC = () => {
         recordsDay={recordsDay}
         onAddImage={handleAddImage}
         onReplaceImage={handleReplaceImage}
-        onChangeById={handlePutRecordDayById}
         onDeleteImage={handleDeleteRecordDayById}
         maxImages={MAX_IMAGES}
       />

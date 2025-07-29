@@ -10,7 +10,7 @@ export type ImageGridUploaderProps = {
   onReplaceImage: ({ id, file }: { id: string; file?: File }) => void;
   onChangeById?: ({ id, payload }: { id: string; payload: RecordDay }) => void;
   onDeleteImage: (id: string) => void;
-  maxImages?: number;
+  maxImages: number;
 }
 
 export type ImageUploadCardProps = {
@@ -19,7 +19,7 @@ export type ImageUploadCardProps = {
   title?: string;
   hasImage: boolean;
   onDelete: () => void;
-  onReplaceClick: () => void;
+  onReplace: () => void;
 }
 
 export type AddImageCardProps = {

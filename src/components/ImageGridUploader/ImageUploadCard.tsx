@@ -8,7 +8,7 @@ const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
   title = "",
   hasImage,
   onDelete,
-  onReplaceClick,
+  onReplace,
 }) => {
   return (
     <S.ImageBox $hasImage={hasImage}>
@@ -21,7 +21,7 @@ const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
               title="Atualizar imagem"
               variant="filled"
               iconType="refresh"
-              onClick={onReplaceClick}
+              onClick={onReplace}
               disabled={!hasImage}
             />
             <ButtonIcon
