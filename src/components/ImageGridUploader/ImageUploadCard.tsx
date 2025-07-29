@@ -24,22 +24,26 @@ const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
               title="Atualizar imagem"
               variant="filled"
               iconType="refresh"
+              showLoadingOverlay
+              isLoading={!hasImage || isLoading}
+              disabled={!hasImage || isLoading}
               onClick={async () => {
                 await delay(300); // Adiciona um pequeno delay no clique
                 onReplace();
               }}
-              disabled={!hasImage || isLoading}
             />
             <ButtonIcon
               size="large"
               title="Remover imagem"
               variant="filled"
               iconType="delete"
+              showLoadingOverlay
+              isLoading={isLoading}
+              disabled={isLoading}
               onClick={async () => {
                 await delay(300); // Adiciona um pequeno delay no clique
                 onDelete();
               }}
-              disabled={isLoading}
             />
           </div>
         </S.ButtonIconWrapper>

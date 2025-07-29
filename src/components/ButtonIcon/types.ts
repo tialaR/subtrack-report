@@ -8,4 +8,6 @@ export type ButtonIconProps = {
   iconType?: keyof typeof import('@utils/iconsHelper').iconMap;
   size?: ButtonIconSize;
   color?: string;
+  isLoading?: boolean;
+  showLoadingOverlay?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;

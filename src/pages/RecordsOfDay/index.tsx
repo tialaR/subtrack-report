@@ -166,6 +166,7 @@ const RecordsOfDay: React.FC = () => {
             iconType="camera"
             showIcon
             disabled={isRecordsEmpty}
+            showLoadingOverlay
             onClick={handleGenerateAndCapture}
           >
             Capturar imagem
@@ -175,6 +176,7 @@ const RecordsOfDay: React.FC = () => {
             variant="secondary"
             iconType="show"
             showIcon
+            showLoadingOverlay
             disabled={isPreviewEmpty}
             onClick={openModal}
           >
@@ -185,6 +187,7 @@ const RecordsOfDay: React.FC = () => {
             variant="secondary"
             showIcon
             iconType="delete"
+            showLoadingOverlay
             disabled={isRecordsEmpty}
             onClick={handleDeleteAllRecords}
           >

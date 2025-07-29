@@ -7,6 +7,8 @@ const Button: React.FC<ButtonProps> = ({
   iconType,
   showIcon = false,
   fullWidth = false,
+  isLoading = false,
+  showLoadingOverlay = false,
   children,
   ...rest
 }) => {
@@ -17,6 +19,9 @@ const Button: React.FC<ButtonProps> = ({
       variant={variant}
       fullWidth={fullWidth}
       iconType={iconType}
+      isLoading={isLoading}
+      showLoadingOverlay={showLoadingOverlay}
+      disabled={isLoading || rest.disabled}
       {...rest}
     >
       {children}

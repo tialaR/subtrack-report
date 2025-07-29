@@ -8,6 +8,8 @@ export const ButtonIcon: React.FC<ButtonIconProps> = ({
   color, 
   size = 'regular', 
   variant = 'outlined', 
+  isLoading = false,
+  showLoadingOverlay = false,
   ...rest 
 }) => {
   const IconComponent = iconType ? iconMap[iconType] : null;
@@ -19,6 +21,9 @@ export const ButtonIcon: React.FC<ButtonIconProps> = ({
       $iconType={iconType}
       $isToggle={isToggle}
       variant={variant}
+      isLoading={isLoading}
+      showLoadingOverlay={showLoadingOverlay}
+      disabled={isLoading || rest.disabled}
       {...rest}
     >
       {IconComponent && <IconComponent aria-hidden />}

@@ -1,6 +1,15 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { theme } from '@styles/theme';
 import type { ButtonIconProps } from './types';
+
+const shimmer = keyframes`
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+`;
 
 type StyledProps = {
   $size?: ButtonIconProps['size'];
@@ -8,6 +17,8 @@ type StyledProps = {
   $color?: string;
   $iconType?: ButtonIconProps['iconType'];
   variant?: ButtonIconProps['variant'];
+  isLoading?: boolean;
+  showLoadingOverlay?: boolean;
 };
 
 const sizeMap = {
@@ -25,8 +36,9 @@ const iconSizeMap = {
 };
 
 export const IconButton = styled.button.withConfig({
-  shouldForwardProp: (prop) => !['$size', '$color', '$iconType', 'variant'].includes(prop),
+  shouldForwardProp: (prop) => !['$size', '$color', '$iconType', 'variant', 'isLoading', 'showLoadingOverlay'].includes(prop),
 })<StyledProps>`
+  position: relative;
   cursor: pointer;
   border: none;
   padding: ${({ theme }) => theme.spacing[100]};
@@ -47,7 +59,7 @@ export const IconButton = styled.button.withConfig({
 
   ${({ variant = 'outlined', $color, $iconType, $isToggle, theme }) => {
     const isDeleteIcon = $iconType === 'delete' || $iconType === 'deleteAlt';
-    
+
     let resolveFilledColor;
     if (isDeleteIcon) {
       resolveFilledColor = theme.colors.secondary.red;
@@ -84,7 +96,7 @@ export const IconButton = styled.button.withConfig({
       background-color: transparent;
 
       > svg {
-        stroke: ${resolvedOutlinedColor}
+        stroke: ${resolvedOutlinedColor};
       }
 
       &:hover:not(:disabled) {
@@ -102,4 +114,25 @@ export const IconButton = styled.button.withConfig({
     opacity: 0.3;
     cursor: not-allowed;
   }
+
+  ${({ isLoading, showLoadingOverlay }) =>
+    isLoading && showLoadingOverlay && css`
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.05) 75%);
+        background-size: 200% 100%;
+        animation: ${shimmer} 1.2s ease-in-out infinite;
+        z-index: 1;
+      }
+    `}
+`;
+
+export const LoaderSkeleton = styled.div`
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
 `;
