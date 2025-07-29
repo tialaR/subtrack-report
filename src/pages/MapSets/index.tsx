@@ -41,7 +41,7 @@ const MapSets: React.FC = () => {
         <StyleButtonsWrapper>
           <Button
             title="Redefinir posições"
-            variant="secondary"
+            variant="primary"
             showIcon
             iconType="refresh"
             onClick={resetSnapshots}
@@ -51,7 +51,7 @@ const MapSets: React.FC = () => {
 
           <Button
             title="Excluir todos screenshots"
-            variant="primary"
+            variant="secondary"
             showIcon
             iconType="delete"
             onClick={removeAllSnapshots}
