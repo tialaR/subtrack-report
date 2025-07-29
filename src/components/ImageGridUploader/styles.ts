@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 export const ImageBoxWrapper = styled.div`
   display: flex;
@@ -84,3 +84,35 @@ export const ButtonIconWrapper = styled.div`
       gap: ${({ theme }) => theme.spacing[100]};
     }
   `
+
+// Spin Loader
+const spin = keyframes`
+  0% {
+    transform: rotate(0deg) scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg) scale(0.95);
+    opacity: 0.7;
+  }
+`;
+
+export const LoaderWrapper = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+export const Loader = styled.div`
+  border: 0.25rem solid ${({ theme }) => theme.colors.beige[500]};
+  border-top: 0.25rem solid ${({ theme }) => theme.colors.grey[800]};
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+  animation: ${spin} 4s ease-in-out infinite;
+`;

@@ -3,15 +3,20 @@ import { AxiosError } from 'axios';
 import { api } from '@services/api';
 import { useToastInfo } from '@hooks/useToastInfo';
 
-export const useDeleteRecordsDayPreviewById = () => {
+export const useDeleteRecordsDayPreview = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const deleteRecordsDayPreviewById = async (id: string) => {
+  const deleteRecordsDayPreview = async () => {
     setLoading(true);
     try {
-      await api.delete(`/records_day_capture/${id}`);
+      const response = await api.get('/records_day_capture');
+      const recordsDayPreview = response.data;
+
+      for (const recordDayPreview of recordsDayPreview) {
+        await api.delete(`/records_day_capture/${recordDayPreview.id}`);
+      }
     } catch (err: unknown | AxiosError) {
       const message = err instanceof AxiosError ? err : 'Erro ao deletar o preview dos registros do dia';
       setError(message);
@@ -25,5 +30,5 @@ export const useDeleteRecordsDayPreviewById = () => {
     }
   };
 
-  return { deleteRecordsDayPreviewById, loading, error };
+  return { deleteRecordsDayPreview, loading, error };
 };

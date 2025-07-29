@@ -25,5 +25,5 @@ export const useDeleteRecordDayById = () => {
     }
   };
 
-  return { deleteRecordDayById, deleteRecordDayByIdLoading: loading, deleteRecordDayByIdError: error };
+  return { deleteRecordDayById, loading, error };
 };

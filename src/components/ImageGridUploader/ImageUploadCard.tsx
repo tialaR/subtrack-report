@@ -1,6 +1,7 @@
 import { ButtonIcon } from "@components/ButtonIcon";
 import type { ImageUploadCardProps } from "./types";
 import * as S from "./styles";
+import { delay } from "@utils/delayHelper"; 
 
 const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
   id,
@@ -9,11 +10,13 @@ const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
   hasImage,
   onDelete,
   onReplace,
+  isLoading = false,
 }) => {
   return (
     <S.ImageBox $hasImage={hasImage}>
       <S.UploadBox htmlFor={id} $hasImage={hasImage}>
-        {hasImage ? <S.PreviewImage src={image} alt={title} /> : null}
+        {hasImage && !isLoading && <S.PreviewImage src={image} alt={title} />}
+        {isLoading && <S.LoaderWrapper><S.Loader /></S.LoaderWrapper>}
         <S.ButtonIconWrapper>
           <div>
             <ButtonIcon
@@ -21,15 +24,22 @@ const ImageUploadCard: React.FC<ImageUploadCardProps> = ({
               title="Atualizar imagem"
               variant="filled"
               iconType="refresh"
-              onClick={onReplace}
-              disabled={!hasImage}
+              onClick={async () => {
+                await delay(300); // Adiciona um pequeno delay no clique
+                onReplace();
+              }}
+              disabled={!hasImage || isLoading}
             />
             <ButtonIcon
               size="large"
               title="Remover imagem"
               variant="filled"
               iconType="delete"
-              onClick={onDelete}
+              onClick={async () => {
+                await delay(300); // Adiciona um pequeno delay no clique
+                onDelete();
+              }}
+              disabled={isLoading}
             />
           </div>
         </S.ButtonIconWrapper>

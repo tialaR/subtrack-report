@@ -29,5 +29,5 @@ export const usePostRecordDay = () => {
     }
   };
 
-  return { postRecordDay, updatedRecordDay: data, postRecordDayLoading: loading, postErrorRecordDay: error };
+  return { postRecordDay, data, loading, error };
 };

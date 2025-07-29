@@ -14,10 +14,11 @@ import { useDeleteRecordDayById } from "@services/hooks/recordsDay/useDeleteReco
 import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
 import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
 import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
-import { useDeleteRecordsDayPreviewById } from "@services/hooks/recordsDay/useDeleteRecordsDayPreviewById";
+import { useDeleteRecordsDayPreview } from "@services/hooks/recordsDay/useDeleteRecordsDayPreview";
 import { useRecordDayCapture } from "@services/hooks/recordsDay/useRecordDayCapture";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
 import type { RecordDay } from "@services/hooks/recordsDay/types";
+import { delay } from "@utils/delayHelper";
 import * as S from "./styles";
 
 const MAX_IMAGES = 8;
@@ -38,8 +39,8 @@ const RecordsOfDay: React.FC = () => {
     data: recordsDayPreview,
     loading: isRecordsDayPreviewLoading,
   } = useGetRecordsDayPreview();
-  const { deleteRecordsDayPreviewById } = useDeleteRecordsDayPreviewById();
-  const { containerRef, hasPersisted, handlePersist } = useRecordDayCapture();
+  const { deleteRecordsDayPreview } = useDeleteRecordsDayPreview();
+  const { containerRef, handlePersist } = useRecordDayCapture();
 
   const { Modal, openModal, createModal } = useModal();
 
@@ -47,6 +48,8 @@ const RecordsOfDay: React.FC = () => {
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [renderHiddenPreview, setRenderHiddenPreview] = useState(false);
+  const [loadingCardIds, setLoadingCardIds] = useState<string[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
 
   const isFirstRender = isRecordsDayLoading && refreshTrigger === 0;
 
@@ -93,6 +96,7 @@ const RecordsOfDay: React.FC = () => {
 
   const handleAddImage = async (file?: File) => {
     if (!file) return;
+    setIsAdding(true);
     const base64 = await fileToBase64(file);
     const newRecord: RecordDay = {
       id: uuidv4(),
@@ -100,6 +104,7 @@ const RecordsOfDay: React.FC = () => {
       image: base64,
     };
     await postRecordDay(newRecord);
+    setIsAdding(false);
     refresh();
   };
 
@@ -111,8 +116,10 @@ const RecordsOfDay: React.FC = () => {
     file?: File;
   }) => {
     if (!file) return;
+    setLoadingCardIds((prev) => [...prev, id]);
     const base64 = await fileToBase64(file);
     await patchRecordDay({ id, payload: { image: base64 } });
+    setLoadingCardIds((prev) => prev.filter((item) => item !== id));
     refresh();
   };
 
@@ -123,23 +130,24 @@ const RecordsOfDay: React.FC = () => {
     id: string;
     recordsDayWillBeEmpty: boolean;
   }) => {
+    setLoadingCardIds((prev) => [...prev, id]);
     await deleteRecordDayById(id);
     if (recordsDayWillBeEmpty) {
-      await deleteRecordsDayPreviewById(recordsDayPreview?.[0]?.id);
+      await deleteRecordsDayPreview();
     }
+    setLoadingCardIds((prev) => prev.filter((item) => item !== id));
     refresh();
   };
 
   const handleDeleteAllRecords = async () => {
     await deleteAllRecordsDay();
-    await deleteRecordsDayPreviewById(recordsDayPreview?.[0]?.id);
+    await deleteRecordsDayPreview();
     refresh();
   };
 
   const handleGenerateAndCapture = async () => {
-    // Renderiza o componente ocultamente
     setRenderHiddenPreview(true);
-    await new Promise((r) => setTimeout(r, 100));
+    await delay(100); // Adiciona um pequeno delay no clique
     await handlePersist();
     getRecordsDayPreview();
   };
@@ -222,17 +230,17 @@ const RecordsOfDay: React.FC = () => {
           onReplaceImage={handleReplaceImage}
           onDeleteImage={handleDeleteRecordDayById}
           maxImages={MAX_IMAGES}
+          isCardLoading={(id) => loadingCardIds.includes(id)}
+          isAddingImage={isAdding}
         />
         {showMaxLimit && (
           <S.Message>
-            VOCÊ ATINGIU 0 LIMITE MÁXIMO DE IMAGENS PARA GERAR OS REGISTROS DO
-            DIA!
+            VOCÊ ATINGIU 0 LIMITE MÁXIMO DE IMAGENS PARA GERAR OS REGISTROS DO DIA!
           </S.Message>
         )}
       </S.Container>
       {Modal}
 
-      {/* Renderização invisível para captura dos registros do dia */}
       {renderHiddenPreview && (
         <div style={{ position: "absolute", top: -9999, left: -9999 }}>
           <RecordDayPreview

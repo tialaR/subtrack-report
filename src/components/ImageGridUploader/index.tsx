@@ -10,9 +10,11 @@ export const ImageGridUploader: React.FC<ImageGridUploaderProps> = ({
   onReplaceImage,
   onDeleteImage,
   maxImages,
+  isCardLoading,
+  isAddingImage,
 }) => {
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const canAddMoreImages = recordsDay.length < maxImages;
+  const canAddMoreImages = recordsDay?.length < maxImages;
 
   return (
     <S.ImageBoxWrapper>
@@ -25,16 +27,19 @@ export const ImageGridUploader: React.FC<ImageGridUploaderProps> = ({
               inputRefs.current[record?.id] = el;
             }}
             style={{ display: "none" }}
-            onChange={(e) => onReplaceImage({ id: record.id, file: e.target.files?.[0] })}
+            onChange={(e) => onReplaceImage({ id: record?.id, file: e.target.files?.[0] })}
           />
 
           <ImageUploadCard
             id={`upload-${index}`}
             image={record?.image}
             title={record?.title}
-            hasImage={!!record.image}
-            onDelete={() => onDeleteImage({id: record?.id, recordsDayWillBeEmpty: !!(recordsDay?.length === 1)})}
+            hasImage={!!record?.image}
+            onDelete={() =>
+              onDeleteImage({ id: record?.id, recordsDayWillBeEmpty: !!(recordsDay?.length === 1) })
+            }
             onReplace={() => inputRefs.current[record?.id]?.click()}
+            isLoading={isCardLoading?.(record?.id) ?? false}
           />
         </div>
       ))}
@@ -42,6 +47,7 @@ export const ImageGridUploader: React.FC<ImageGridUploaderProps> = ({
       {canAddMoreImages && (
         <AddImageCard
           onAdd={(e) => onAddImage(e.target.files?.[0])}
+          isLoading={isAddingImage}
         />
       )}
     </S.ImageBoxWrapper>

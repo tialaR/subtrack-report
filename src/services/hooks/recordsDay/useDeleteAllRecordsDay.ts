@@ -30,5 +30,5 @@ export const useDeleteAllRecordsDay = () => {
     }
   };
 
-  return { deleteAllRecordsDay, deleteAllRecordsDayLoading: loading, deleteAllRecordsDayError: error };
+  return { deleteAllRecordsDay, loading, error };
 };
