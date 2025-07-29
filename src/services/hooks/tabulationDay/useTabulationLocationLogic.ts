@@ -7,8 +7,12 @@ import { useGetTabulationDay } from "@services/hooks/tabulationDay/useGetTabulat
 import type { TabulationDay } from "@services/hooks/tabulationDay/types";
 import type { PartialLocationValues } from "@pages/TabulationDay/types";
 import { formatDateToPortuguese, getCurrentDateInTimezone } from "@utils/dateHelper";
+import { persistImageWithCanvas } from "@utils/persistImageHelper";
+import { useToastInfo } from "@hooks/useToastInfo";
 
 export const useTabulationLocationLogic = () => {
+  const { showToast } = useToastInfo();
+
   const hasFetchedTabulation = useRef(false);
   const lastTimezoneRef = useRef<string | null>(null);
 
@@ -135,6 +139,25 @@ export const useTabulationLocationLogic = () => {
     }
   };
 
+  // Captura a imagem da tabulação e persiste no servidor
+  const captureAndPersistTabulationImage = async (ref: React.RefObject<HTMLDivElement | null>) => {
+    if (!tabulationDay) return;
+
+    await persistImageWithCanvas({
+      ref,
+      payload: tabulationDay,
+      persistFn: persistTabulation,
+      onSuccess: () =>
+        showToast({ type: "success", message: "Tabulação capturada com sucesso!" }),
+      onError: () =>
+        showToast({
+          type: "error",
+          message: "Erro ao capturar tabulação!",
+          description: "Tente novamente.",
+        }),
+    });
+  };
+
   // Retorna todas as variáveis e funções úteis para o componente
   return {
     coordsWithTimezone,
@@ -147,6 +170,7 @@ export const useTabulationLocationLogic = () => {
     submitManualLocation,
     retryGetHourlyWeather,
     persistTabulation,
+    captureAndPersistTabulationImage,
     tabulationDay,
     isLoadingTabulationDay,
   };

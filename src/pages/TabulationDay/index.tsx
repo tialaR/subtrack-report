@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from "react";
-import html2canvas from "html2canvas";
 import { AccordionWeatherLegend } from "@components/AccordionWeatherLegend";
 import { MainDescription } from "@components/MainDescription";
 import { Tooltip } from "@components/Tooltip";
@@ -8,7 +7,6 @@ import { ErrorScreen } from "@components/ErrorScreen";
 import { Button } from "@components/Button";
 import { TogglePanel } from "@components/TogglePanel";
 import { useModal } from "@hooks/useModal";
-import { useToastInfo } from "@hooks/useToastInfo";
 import { FormLocationMemorized } from "./FormLocationMemorized";
 import { TabulationPreview } from "./TabulationPreview";
 import { useTabulationLocationLogic } from "@services/hooks/tabulationDay/useTabulationLocationLogic";
@@ -17,7 +15,6 @@ import { StyleButtonsWrapper } from "@styles/StyleComponets";
 import * as S from "./styles";
 
 export const TabulationDay = () => {
-  const { showToast } = useToastInfo();
   const { createModal, Modal, openModal } = useModal();
 
   const tabulationRef = useRef<HTMLDivElement>(null);
@@ -31,7 +28,7 @@ export const TabulationDay = () => {
     useCurrentLocation,
     submitManualLocation,
     retryGetHourlyWeather,
-    persistTabulation,
+    captureAndPersistTabulationImage,
     tabulationDay,
     isLoadingTabulationDay,
   } = useTabulationLocationLogic();
@@ -45,34 +42,6 @@ export const TabulationDay = () => {
   }, [hourlyWeather]);
 
   const hasImage = tabulationDay?.image && !isLoadingTabulationDay;
-
-  const handleGenerateTabulationImage = async () => {
-    if (!tabulationRef.current) return;
-
-    try {
-      const canvas = await html2canvas(tabulationRef.current, {
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        scale: 2,
-      });
-
-      const image = canvas.toDataURL("image/png");
-
-      persistTabulation({ ...tabulationDay, image });
-
-      showToast({
-        type: "success",
-        message: "Tabulação capturada com sucesso!",
-      });
-    } catch (err) {
-      showToast({
-        type: "error",
-        message: "Erro ao capturar tabulação!",
-        description: "Tente novamente.",
-      });
-      console.error("Erro ao gerar imagem da tabulação: ", err);
-    }
-  };
 
   useEffect(() => {
     if (hasImage) {
@@ -112,7 +81,7 @@ export const TabulationDay = () => {
             variant="primary"
             iconType="camera"
             showIcon
-            onClick={handleGenerateTabulationImage}
+            onClick={() => captureAndPersistTabulationImage(tabulationRef)}
           >
             Capturar tabulação
           </Button>
