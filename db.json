@@ -7,14 +7,14 @@
   },
   "records_day": [],
   "tabulation_day": {
-    "id": "260bd3f6-0681-4d3a-90a6-77a85366b8fe",
+    "id": "9f000119-35f7-46d4-8aba-e3d8ffdfc5fe",
     "title": "Tabulação do Dia",
     "content": "Previsão meteorológica por hora com base na localização.",
-    "latitude": -3.119,
-    "longitude": -60.0217,
-    "timezone": "America/Manaus",
+    "latitude": -12.94695965549906,
+    "longitude": -38.371753354568646,
+    "timezone": "America/Bahia",
     "image": "",
-    "current_date": "segunda-feira, 28 de julho de 2025"
+    "current_date": "terça-feira, 29 de julho de 2025"
   },
   "general_map_screenshot_markers": {
     "id": "uuid-4",

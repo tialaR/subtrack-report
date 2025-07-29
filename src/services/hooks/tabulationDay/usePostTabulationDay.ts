@@ -9,11 +9,10 @@ export const usePostTabulationDay = () => {
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const postTabulationDay = async (payload: TabulationDay) => {
+  const postTabulationDay = async (payload: TabulationDay): Promise<void> => {
     setLoading(true);
     try {
-      const response = await api.post<TabulationDay>('/tabulation_day', payload);
-      return response.data;
+       await api.post<TabulationDay>('/tabulation_day', payload);
     } catch (err: unknown | AxiosError) {
       const message = err instanceof AxiosError ? err : 'Erro ao criar tabulação';
       setError(message);

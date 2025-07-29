@@ -40,7 +40,7 @@ export const FormLocationMemorized = memo(
         <Select
           label="Selecionar Timezone"
           required
-          value={value || timezone}
+          value={timezone || value}
           icon={<FiGlobe />}
           onChange={setTimezone}
           helperText="Fuso horário"
@@ -54,8 +54,6 @@ export const FormLocationMemorized = memo(
           name="latitude"
           placeholder="Ex: -12.97"
           helperText="Em graus decimais"
-          readOnly
-          disabled
           value={latitude ?? ""}
           onChange={(e) => setLatitude(e.target.value)}
           prefixItem={<FiCompass />}
@@ -65,8 +63,6 @@ export const FormLocationMemorized = memo(
           name="longitude"
           placeholder="Ex: -38.50"
           helperText="Em graus decimais"
-          readOnly
-          disabled
           value={longitude ?? ""}
           onChange={(e) => setLongitude(e.target.value)}
           prefixItem={<FiCompass />}

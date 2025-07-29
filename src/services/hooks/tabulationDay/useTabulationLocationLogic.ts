@@ -42,7 +42,7 @@ export const useTabulationLocationLogic = () => {
     postTabulationDay,
   } = usePostTabulationDay();
 
-  const isGeneralLoading = isCoordsWithTimezoneLoading || isHourlyWeatherLoading;
+  const isGeneralLoading = isCoordsWithTimezoneLoading || isHourlyWeatherLoading || isSwitching;
 
   /* Tenta buscar dados do json server no primeiro render */ 
   useEffect(() => {
@@ -78,7 +78,7 @@ export const useTabulationLocationLogic = () => {
   }, [hasFetchedTabulation.current, tabulationDay.timezone, isLoadingTabulationDay]);
 
    useEffect(() => {
-    //alert(JSON.stringify(coordsWithTimezone))
+    alert(JSON.stringify(coordsWithTimezone))
 
     const timezoneHasChanged = 
         coordsWithTimezone.timezone 
@@ -109,16 +109,19 @@ export const useTabulationLocationLogic = () => {
         };
         if (tabulationDay?.image && coordsWithTimezone.timezone !== tabulationDay.timezone) {
             persistTabulation(payload);
+        } else if (!tabulationDay?.image && coordsWithTimezone.timezone !== tabulationDay.timezone) {
+            persistTabulation(payload);
+        } else if (!tabulationDay?.image && coordsWithTimezone.timezone === tabulationDay.timezone) {
+          persistTabulation(payload);
         } else if (tabulationDay?.image && coordsWithTimezone.timezone === tabulationDay.timezone) {
-            persistTabulation({...payload, image: tabulationDay?.image});
-        } 
+          persistTabulation({...payload, image: tabulationDay?.image});
+        }
     } 
+  }, [coordsWithTimezone, isHourlyWeatherLoading, tabulationDay, isPostTabulationDayLoading]);
 
-  }, [coordsWithTimezone, isHourlyWeatherLoading, tabulationDay]);
-
-  useEffect(() => {
-    if (!isPostTabulationDayLoading) getTabulationDay();
-  }, [isPostTabulationDayLoading]);
+  // useEffect(() => {
+  //   if (!isPostTabulationDayLoading) getTabulationDay();
+  // }, [isPostTabulationDayLoading]);
 
   const useCurrentLocation = (): void => {
     setIsSwitching(true);
@@ -145,7 +148,7 @@ export const useTabulationLocationLogic = () => {
     }
   };
 
-  const persistTabulation = ({
+  const persistTabulation = async ({
     id,
     title,
     content,
@@ -154,17 +157,23 @@ export const useTabulationLocationLogic = () => {
     timezone,
     image,
     current_date,
-  }: TabulationDay ) => {
-    postTabulationDay({
-      id,
-      title,
-      content,
-      latitude,
-      longitude,
-      timezone,
-      image,
-      current_date,
-    });
+  }: TabulationDay) => {
+    try {
+      await postTabulationDay({
+        id,
+        title,
+        content,
+        latitude,
+        longitude,
+        timezone,
+        image,
+        current_date,
+      });
+
+      await getTabulationDay();
+    } catch (error) {
+      console.error("Erro ao persistir tabulação e sincronizar:", error);
+    }
   };
 
   return {

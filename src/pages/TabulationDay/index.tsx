@@ -103,10 +103,9 @@ export const TabulationDay = () => {
       ) : (
         <MainDescription>DATA DE HOJE - TIMEZONE</MainDescription>
       )}
-
       <TogglePanel>
         <FormLocationMemorized
-          value={tabulationDay.timezone || ""}
+          value={tabulationDay?.timezone ?? ""}
           onSubmit={submitManualLocation}
           onUseCurrentLocation={useCurrentLocation}
         />
@@ -135,51 +134,51 @@ export const TabulationDay = () => {
     </>
   );
 
-  // if (isGeneralLoading) {
-  //   let title = "Carregando previsão...";
-  //   let description = "Obtendo dados climáticos para hoje.";
+  if (isGeneralLoading) {
+    let title = "Carregando previsão...";
+    let description = "Obtendo dados climáticos para hoje.";
 
-  //   if (isSwitching) {
-  //     title = "Atualizando localização...";
-  //     description = "Estamos voltando para sua localização atual.";
-  //   } else if (!coordsWithTimezone.latitude || !coordsWithTimezone.longitude) {
-  //     title = "Detectando localização...";
-  //     description = "Buscando sua posição geográfica...";
-  //   }
+    if (isSwitching) {
+      title = "Atualizando localização...";
+      description = "Estamos voltando para sua localização atual.";
+    } else if (!coordsWithTimezone.latitude || !coordsWithTimezone.longitude) {
+      title = "Detectando localização...";
+      description = "Buscando sua posição geográfica...";
+    }
 
-  //   return (
-  //     <>
-  //       {renderHeader()}
-  //       <LoadingScreen title={title} description={description} />
-  //     </>
-  //   );
-  // }
+    return (
+      <>
+        {renderHeader()}
+        <LoadingScreen title={title} description={description} />
+      </>
+    );
+  }
 
-  // if (locationError) {
-  //   return (
-  //     <>
-  //       {renderHeader()}
-  //       <ErrorScreen
-  //         title="Erro ao obter localização"
-  //         description="Não conseguimos acessar sua localização. Verifique as permissões do navegador ou tente inserir manualmente."
-  //         onRetry={useCurrentLocation}
-  //       />
-  //     </>
-  //   );
-  // }
+  if (locationError) {
+    return (
+      <>
+        {renderHeader()}
+        <ErrorScreen
+          title="Erro ao obter localização"
+          description="Não conseguimos acessar sua localização. Verifique as permissões do navegador ou tente inserir manualmente."
+          onRetry={useCurrentLocation}
+        />
+      </>
+    );
+  }
 
-  // if (weatherError) {
-  //   return (
-  //     <>
-  //       {renderHeader()}
-  //       <ErrorScreen
-  //         title="Erro ao obter previsão"
-  //         description="Houve uma falha ao carregar a previsão do tempo para hoje. Tente novamente."
-  //         onRetry={retryGetHourlyWeather}
-  //       />
-  //     </>
-  //   );
-  // }
+  if (weatherError) {
+    return (
+      <>
+        {renderHeader()}
+        <ErrorScreen
+          title="Erro ao obter previsão"
+          description="Houve uma falha ao carregar a previsão do tempo para hoje. Tente novamente."
+          onRetry={retryGetHourlyWeather}
+        />
+      </>
+    );
+  }
 
   return (
     <>
