@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useTodayHourlyWeather } from "./useTodayHourlyWeather";
 import { useWeatherLocation } from "./useWeatherLocation";
@@ -9,13 +9,10 @@ import type { PartialLocationValues } from "@pages/TabulationDay/types";
 import { formatDateToPortuguese, getCurrentDateInTimezone } from "@utils/dateHelper";
 
 export const useTabulationLocationLogic = () => {
-  const [location, setLocation] = useState<PartialLocationValues | null>(null);
-  const [isSwitching, setIsSwitching] = useState(false);
-
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasFetchedTabulation = useRef(false);
   const lastTimezoneRef = useRef<string | null>(null);
 
+  // Hook de localização (coordenadas + timezone)
   const {
     coordsWithTimezone,
     loading: isCoordsWithTimezoneLoading,
@@ -23,6 +20,7 @@ export const useTabulationLocationLogic = () => {
     getCoordsWithTimezone,
   } = useWeatherLocation();
 
+  // Hook de clima por hora
   const {
     hourlyWeather,
     todayDate,
@@ -31,59 +29,51 @@ export const useTabulationLocationLogic = () => {
     getHourlyWeather,
   } = useTodayHourlyWeather();
 
+  // Hook de consulta da tabulação no servidor
   const {
     tabulationDay,
     loading: isLoadingTabulationDay,
     getTabulationDay,
   } = useGetTabulationDay();
 
+  // Hook de persistência da tabulação
   const {
-    loading: isPostTabulationDayLoading,
     postTabulationDay,
   } = usePostTabulationDay();
 
-  const isGeneralLoading = isCoordsWithTimezoneLoading || isHourlyWeatherLoading || isSwitching;
+  // Loading geral consolidado
+  const isGeneralLoading = isCoordsWithTimezoneLoading || isHourlyWeatherLoading;
 
-  /* Tenta buscar dados do json server no primeiro render */ 
+  // Carrega dados da tabulação do servidor ao carregar a tela
   useEffect(() => {
     if (!hasFetchedTabulation.current) {
       const fetchInitialData = () => {
-            getTabulationDay();
-            hasFetchedTabulation.current = true;
+        getTabulationDay();
+        hasFetchedTabulation.current = true;
       };
       fetchInitialData();
     }
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
   }, []);
 
-  /* Busca dados da api de coordenadas caso não dados no json server */ 
+  // Busca coordenadas caso não existam dados persistidos
   useEffect(() => {
-    //alert(JSON.stringify(tabulationDay))
     if (hasFetchedTabulation.current && tabulationDay.timezone && !isLoadingTabulationDay) {
-        getCoordsWithTimezone({ timezone: tabulationDay.timezone });
-        return;
-    } 
+      getCoordsWithTimezone({ timezone: tabulationDay.timezone });
+      return;
+    }
 
     if (hasFetchedTabulation.current && !!tabulationDay.timezone && !isLoadingTabulationDay) {
-        getCoordsWithTimezone();
-        return;
-    } 
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
+      getCoordsWithTimezone();
+      return;
+    }
   }, [hasFetchedTabulation.current, tabulationDay.timezone, isLoadingTabulationDay]);
 
-   useEffect(() => {
-    alert(JSON.stringify(coordsWithTimezone))
-
-    const timezoneHasChanged = 
-        coordsWithTimezone.timezone 
-        && coordsWithTimezone.timezone !== lastTimezoneRef.current 
-        && !isCoordsWithTimezoneLoading;
+  // Dispara ao obter coordenadas para buscar clima e persistir tabulação
+  useEffect(() => {
+    const timezoneHasChanged =
+      coordsWithTimezone.timezone &&
+      coordsWithTimezone.timezone !== lastTimezoneRef.current &&
+      !isCoordsWithTimezoneLoading;
 
     if (!timezoneHasChanged) return;
 
@@ -91,55 +81,42 @@ export const useTabulationLocationLogic = () => {
 
     lastTimezoneRef.current = timezone;
 
-    setLocation({ latitude, longitude, timezone });
     getHourlyWeather({ latitude, longitude, timezone });
 
     if (!isHourlyWeatherLoading) {
-        const currentDate = getCurrentDateInTimezone(timezone);
-        const formattedDate = formatDateToPortuguese(currentDate);
-        const payload: TabulationDay = {
-            id: uuidv4(),
-            title: "Tabulação do Dia",
-            content: "Previsão meteorológica por hora com base na localização.",
-            current_date: formattedDate,
-            latitude,
-            longitude,
-            timezone,
-            image: "",
-        };
-        if (tabulationDay?.image && coordsWithTimezone.timezone !== tabulationDay.timezone) {
-            persistTabulation(payload);
-        } else if (!tabulationDay?.image && coordsWithTimezone.timezone !== tabulationDay.timezone) {
-            persistTabulation(payload);
-        } else if (!tabulationDay?.image && coordsWithTimezone.timezone === tabulationDay.timezone) {
-          persistTabulation(payload);
-        } else if (tabulationDay?.image && coordsWithTimezone.timezone === tabulationDay.timezone) {
-          persistTabulation({...payload, image: tabulationDay?.image});
-        }
-    } 
-  }, [coordsWithTimezone, isHourlyWeatherLoading, tabulationDay, isPostTabulationDayLoading]);
+      const currentDate = getCurrentDateInTimezone(timezone);
+      const formattedDate = formatDateToPortuguese(currentDate);
 
-  // useEffect(() => {
-  //   if (!isPostTabulationDayLoading) getTabulationDay();
-  // }, [isPostTabulationDayLoading]);
+      const isSameTimezone = timezone === tabulationDay?.timezone;
+      const image = isSameTimezone ? tabulationDay?.image ?? "" : ""; // reseta imagem se timezone mudou
 
+      // Cria payload completo
+      const payload: TabulationDay = {
+        id: uuidv4(),
+        title: "Tabulação do Dia",
+        content: "Previsão meteorológica por hora com base na localização.",
+        current_date: formattedDate,
+        latitude,
+        longitude,
+        timezone,
+        image,
+      };
+
+      persistTabulation(payload); // persiste e sincroniza com o servidor
+    }
+  }, [coordsWithTimezone, isHourlyWeatherLoading, tabulationDay, isCoordsWithTimezoneLoading]);
+
+  // Define localização para coordenadas atuais
   const useCurrentLocation = (): void => {
-    setIsSwitching(true);
-    setLocation(null);
     getCoordsWithTimezone();
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsSwitching(false), 600);
   };
 
+  // Define localização manual (formulário)
   const submitManualLocation = (values: PartialLocationValues): void => {
-    setIsSwitching(true);
-    setLocation(values);
     getCoordsWithTimezone(values);
-    //getHourlyWeather(values);
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setIsSwitching(false), 600);
   };
 
+  // Tenta obter previsão novamente
   const retryGetHourlyWeather = (): void => {
     const { latitude, longitude, timezone } = coordsWithTimezone;
     const isValid = !!latitude && !!longitude && !!timezone;
@@ -148,47 +125,28 @@ export const useTabulationLocationLogic = () => {
     }
   };
 
-  const persistTabulation = async ({
-    id,
-    title,
-    content,
-    latitude,
-    longitude,
-    timezone,
-    image,
-    current_date,
-  }: TabulationDay) => {
+  // Persiste a tabulação e sincroniza com o servidor
+  const persistTabulation = async (payload: TabulationDay) => {
     try {
-      await postTabulationDay({
-        id,
-        title,
-        content,
-        latitude,
-        longitude,
-        timezone,
-        image,
-        current_date,
-      });
-
-      await getTabulationDay();
+      await postTabulationDay(payload);
+      await getTabulationDay(); // Atualiza tela com dado mais recente
     } catch (error) {
       console.error("Erro ao persistir tabulação e sincronizar:", error);
     }
   };
 
+  // Retorna todas as variáveis e funções úteis para o componente
   return {
     coordsWithTimezone,
     hourlyWeather,
     todayDate,
     isGeneralLoading,
-    isSwitching,
     locationError,
     weatherError,
     useCurrentLocation,
     submitManualLocation,
     retryGetHourlyWeather,
     persistTabulation,
-    timeoutRef,
     tabulationDay,
     isLoadingTabulationDay,
   };

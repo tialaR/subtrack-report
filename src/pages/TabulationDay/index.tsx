@@ -13,8 +13,8 @@ import { FormLocationMemorized } from "./FormLocationMemorized";
 import { TabulationPreview } from "./TabulationPreview";
 import { useTabulationLocationLogic } from "@services/hooks/tabulationDay/useTabulationLocationLogic";
 import { getWeatherCode } from "@utils/tabulationHelper";
-import * as S from "./styles";
 import { StyleButtonsWrapper } from "@styles/StyleComponets";
+import * as S from "./styles";
 
 export const TabulationDay = () => {
   const { showToast } = useToastInfo();
@@ -25,16 +25,13 @@ export const TabulationDay = () => {
   const {
     coordsWithTimezone,
     hourlyWeather,
-    todayDate,
     isGeneralLoading,
-    isSwitching,
     locationError,
     weatherError,
     useCurrentLocation,
     submitManualLocation,
     retryGetHourlyWeather,
     persistTabulation,
-    timeoutRef,
     tabulationDay,
     isLoadingTabulationDay,
   } = useTabulationLocationLogic();
@@ -138,10 +135,7 @@ export const TabulationDay = () => {
     let title = "Carregando previsão...";
     let description = "Obtendo dados climáticos para hoje.";
 
-    if (isSwitching) {
-      title = "Atualizando localização...";
-      description = "Estamos voltando para sua localização atual.";
-    } else if (!coordsWithTimezone.latitude || !coordsWithTimezone.longitude) {
+    if (!coordsWithTimezone.latitude || !coordsWithTimezone.longitude) {
       title = "Detectando localização...";
       description = "Buscando sua posição geográfica...";
     }
