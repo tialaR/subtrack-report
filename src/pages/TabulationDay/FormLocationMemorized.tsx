@@ -14,14 +14,14 @@ export type FormLocationProps = {
 type FormLocationMemorizedProps = {
   onSubmit: (values: FormLocationProps) => void;
   onUseCurrentLocation: () => void;
-  value: string;
+  location: FormLocationProps;
 };
 
 export const FormLocationMemorized = memo(
   ({
     onSubmit,
     onUseCurrentLocation,
-    value,
+    location,
   }: FormLocationMemorizedProps) => {
     const [latitude, setLatitude] = useState<string | null>(null);
     const [longitude, setLongitude] = useState<string | null>(null);
@@ -40,7 +40,7 @@ export const FormLocationMemorized = memo(
         <Select
           label="Selecionar Timezone"
           required
-          value={timezone || value}
+          value={timezone || location?.timezone || ""}
           icon={<FiGlobe />}
           onChange={setTimezone}
           helperText="Fuso horário"
@@ -54,8 +54,9 @@ export const FormLocationMemorized = memo(
           name="latitude"
           placeholder="Ex: -12.97"
           helperText="Em graus decimais"
-          value={latitude ?? ""}
-          onChange={(e) => setLatitude(e.target.value)}
+          readOnly
+          value={location?.longitude || ""}
+          //onChange={(e) => setLatitude(e.target.value)}
           prefixItem={<FiCompass />}
         />
         <InputText
@@ -63,8 +64,9 @@ export const FormLocationMemorized = memo(
           name="longitude"
           placeholder="Ex: -38.50"
           helperText="Em graus decimais"
-          value={longitude ?? ""}
-          onChange={(e) => setLongitude(e.target.value)}
+          readOnly
+          value={location?.longitude || ""}
+          //onChange={(e) => setLongitude(e.target.value)}
           prefixItem={<FiCompass />}
         />
         <Button variant="primary" onClick={handleSubmit}>

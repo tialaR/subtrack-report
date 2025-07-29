@@ -71,7 +71,11 @@ export const TabulationDay = () => {
       )}
       <TogglePanel>
         <FormLocationMemorized
-          value={tabulationDay?.timezone ?? ""}
+          location={{
+            timezone: tabulationDay?.timezone ?? "",
+            latitude: tabulationDay?.latitude,
+            longitude: tabulationDay?.longitude,
+          }}
           onSubmit={submitManualLocation}
           onUseCurrentLocation={useCurrentLocation}
         />
