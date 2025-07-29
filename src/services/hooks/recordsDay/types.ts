@@ -3,3 +3,9 @@ export type RecordDay = {
   title: string;
   image: string;
 };
+
+export type RecordDayPreview = {
+  id: string;
+  generated_at: string;
+  image: string;
+}

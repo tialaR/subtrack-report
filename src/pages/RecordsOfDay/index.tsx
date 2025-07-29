@@ -1,29 +1,44 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { MainDescription } from "@components/MainDescription";
 import { ImageGridUploader } from "@components/ImageGridUploader";
 import { StyleButtonsWrapper } from "@styles/StyleComponets";
 import { Button } from "@components/Button";
 import { useModal } from "@hooks/useModal";
+import { RecordDayPreview } from "./RecordDayPreview";
+import { useGetRecordsDayPreview } from "@services/hooks/recordsDay/useGetRecordsDayPreview";
+import { LoadingScreen } from "@components/LoadingScreen";
+import { ErrorScreen } from "@components/ErrorScreen";
 import { usePostRecordDay } from "@services/hooks/recordsDay/usePostRecordDay";
 import { useDeleteRecordDayById } from "@services/hooks/recordsDay/useDeleteRecordDayById";
 import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
 import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
 import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
+import { useDeleteRecordsDayPreviewById } from "@services/hooks/recordsDay/useDeleteRecordsDayPreviewById";
 import { useRecordDayCapture } from "@services/hooks/recordsDay/useRecordDayCapture";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
 import type { RecordDay } from "@services/hooks/recordsDay/types";
 import * as S from "./styles";
-import { RecordDayPreview } from "./RecordDayPreview";
 
 const MAX_IMAGES = 8;
 
 const RecordsOfDay: React.FC = () => {
-  const { recordsDay, getRecordsDay } = useGetRecordsDay();
+  const {
+    data: recordsDay,
+    loading: isRecordsDayLoading,
+    error: isRecordsDayError,
+    getRecordsDay,
+  } = useGetRecordsDay();
   const { postRecordDay } = usePostRecordDay();
   const { patchRecordDay } = usePatchRecordDay();
   const { deleteRecordDayById } = useDeleteRecordDayById();
   const { deleteAllRecordsDay } = useDeleteAllRecordsDay();
+  const {
+    getRecordsDayPreview,
+    data: recordsDayPreview,
+    loading: isRecordsDayPreviewLoading,
+  } = useGetRecordsDayPreview();
+  const { deleteRecordsDayPreviewById } = useDeleteRecordsDayPreviewById();
   const { containerRef, hasPersisted, handlePersist } = useRecordDayCapture();
 
   const { Modal, openModal, createModal } = useModal();
@@ -32,9 +47,22 @@ const RecordsOfDay: React.FC = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [renderHiddenPreview, setRenderHiddenPreview] = useState(false);
 
+  const hasRecordsDayImages =
+    recordsDay && recordsDay.length > 0 && !isRecordsDayLoading;
+
+  const isPreviewEmpty = useMemo(
+    () => !isRecordsDayPreviewLoading && recordsDayPreview.length === 0,
+    [isRecordsDayPreviewLoading, recordsDayPreview]
+  );
+  const isRecordsEmpty = useMemo(
+    () => !isRecordsDayLoading && recordsDay.length === 0,
+    [isRecordsDayLoading, recordsDay]
+  );
+
   useEffect(() => {
     if (!hasMounted.current) {
       getRecordsDay();
+      getRecordsDayPreview();
       hasMounted.current = true;
     }
   }, []);
@@ -42,8 +70,31 @@ const RecordsOfDay: React.FC = () => {
   useEffect(() => {
     if (hasMounted.current) {
       getRecordsDay();
+      getRecordsDayPreview();
     }
   }, [refreshTrigger]);
+
+  useEffect(() => {
+    if (hasRecordsDayImages) {
+      createModal({
+        size: "large",
+        children: (
+          <RecordDayPreview ref={containerRef} recordsDay={recordsDay} />
+        ),
+      });
+    }
+  }, [hasRecordsDayImages]);
+
+  // useEffect(() => {
+  //   const removeRecordsDayPreview = async () => {
+  //     if (recordsDay?.length === 0 && !!recordsDayPreview?.[0]?.image) {
+  //       await deleteRecordsDayPreviewById(recordsDayPreview?.[0]?.id);
+  //       refresh();
+  //     }
+  //   };
+
+  //   removeRecordsDayPreview();
+  // }, [recordsDay.length, recordsDayPreview]);
 
   const refresh = () => setRefreshTrigger((prev) => prev + 1);
 
@@ -72,13 +123,23 @@ const RecordsOfDay: React.FC = () => {
     refresh();
   };
 
-  const handleDeleteRecordDayById = async (id: string) => {
+  const handleDeleteRecordDayById = async ({
+    id,
+    recordsDayWillBeEmpty,
+  }: {
+    id: string;
+    recordsDayWillBeEmpty: boolean;
+  }) => {
     await deleteRecordDayById(id);
+    if (recordsDayWillBeEmpty) {
+      await deleteRecordsDayPreviewById(recordsDayPreview?.[0]?.id);
+    }
     refresh();
   };
 
   const handleDeleteAllRecords = async () => {
     await deleteAllRecordsDay();
+    await deleteRecordsDayPreviewById(recordsDayPreview?.[0]?.id);
     refresh();
   };
 
@@ -87,52 +148,81 @@ const RecordsOfDay: React.FC = () => {
     setRenderHiddenPreview(true);
     await new Promise((r) => setTimeout(r, 100));
     await handlePersist();
-    createModal({
-      size: "large",
-      children: <RecordDayPreview ref={containerRef} recordsDay={recordsDay} />,
-    });
+    getRecordsDayPreview();
   };
+
+  const renderHeader = () => {
+    return (
+      <header>
+        <MainDescription>
+          {"É necessário inserir no mínimo uma imagem e no máximo oito imagens para continuar."?.toUpperCase()}
+        </MainDescription>
+
+        <StyleButtonsWrapper>
+          <Button
+            title="Capturar imagens"
+            variant="primary"
+            iconType="camera"
+            showIcon
+            disabled={isRecordsEmpty}
+            onClick={handleGenerateAndCapture}
+          >
+            Capturar imagem
+          </Button>
+          <Button
+            title="Visualizar captura"
+            variant="secondary"
+            iconType="show"
+            showIcon
+            disabled={isPreviewEmpty}
+            onClick={openModal}
+          >
+            Visualizar captura
+          </Button>
+          <Button
+            title="Excluir todas imagens"
+            variant="secondary"
+            showIcon
+            iconType="delete"
+            disabled={isRecordsEmpty}
+            onClick={handleDeleteAllRecords}
+          >
+            Excluir todas imagens
+          </Button>
+        </StyleButtonsWrapper>
+      </header>
+    );
+  };
+
+  if (isRecordsDayLoading || isRecordsDayPreviewLoading) {
+    return (
+      <>
+        {renderHeader()}
+        <LoadingScreen
+          title="Carregando registros..."
+          description="Obtendo imagens registradas hoje."
+        />
+      </>
+    );
+  }
+
+  if (isRecordsDayError) {
+    return (
+      <>
+        {renderHeader()}
+        <ErrorScreen
+          title="Erro ao obter registros"
+          description="Não conseguimos acessar os registros do dia de hoje. Verifique se existem imagens registradas."
+          onRetry={getRecordsDay}
+        />
+      </>
+    );
+  }
 
   return (
     <>
       <S.Container>
-        <div>
-          <MainDescription>
-            {"É necessário inserir no mínimo uma imagem e no máximo oito imagens para continuar."?.toUpperCase()}
-          </MainDescription>
-
-          <StyleButtonsWrapper>
-            <Button
-              title="Capturar imagens"
-              variant="primary"
-              iconType="camera"
-              showIcon
-              onClick={handleGenerateAndCapture}
-            >
-              Capturar imagem
-            </Button>
-            <Button
-              title="Visualizar captura"
-              variant="secondary"
-              iconType="show"
-              showIcon
-              disabled={!hasPersisted}
-              onClick={openModal}
-            >
-              Visualizar captura
-            </Button>
-            <Button
-              title="Excluir todas imagens"
-              variant="secondary"
-              showIcon
-              iconType="delete"
-              onClick={handleDeleteAllRecords}
-            >
-              Excluir todas imagens
-            </Button>
-          </StyleButtonsWrapper>
-        </div>
-
+        {renderHeader()}
         <ImageGridUploader
           recordsDay={recordsDay}
           onAddImage={handleAddImage}

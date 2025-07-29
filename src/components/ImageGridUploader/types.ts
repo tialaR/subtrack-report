@@ -9,7 +9,7 @@ export type ImageGridUploaderProps = {
   onAddImage: (file?: File) => void;
   onReplaceImage: ({ id, file }: { id: string; file?: File }) => void;
   onChangeById?: ({ id, payload }: { id: string; payload: RecordDay }) => void;
-  onDeleteImage: (id: string) => void;
+  onDeleteImage: ({ id, recordsDayWillBeEmpty }: { id: string; recordsDayWillBeEmpty: boolean }) => void;
   maxImages: number;
 }
 

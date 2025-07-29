@@ -27,7 +27,6 @@ export const ImageBoxWrapper = styled.div`
   justify-content: center;
   align-items: center;    
   gap: ${({ theme }) => theme.spacing[500]};
-  background-color: red;
   width: 100%;
   box-sizing: border-box;
 `;
