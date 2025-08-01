@@ -6,10 +6,9 @@ import { RecordsOfDay } from "@pages/RecordsOfDay";
 import { TabulationDay } from "@pages/TabulationDay";
 import { UnderwaterInspection } from "@pages/UnderwaterInspection";
 import { NotFound } from "@pages/NotFound";
-// import { useSubMapRoutes } from "@hooks/useSubMapRoutes";
+import { SubMapDetail } from "@components/SubMapDetail";
 
 export const AppRoutes: React.FC = () => {
-  // const { routes: dynamicSubRoutes } = useSubMapRoutes();
 
   const router = createBrowserRouter([
     {
@@ -40,7 +39,9 @@ export const AppRoutes: React.FC = () => {
           path: "inspecao-atuacao-granular",
           element: <UnderwaterInspection />,
           handle: { pageTitle: "Inspeção de Atuação Granular" },
-          // children: dynamicSubRoutes,
+          children: [
+            { path: ":id", element: <SubMapDetail /> }, // <-- Rotas dinâmicas adicionadas aqui
+          ], 
         },
         {
           path: "*",

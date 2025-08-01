@@ -17,6 +17,15 @@ export const Container = styled.div`
   flex-direction: column;
 `;
 
+export const SubMenuList = styled.ul`
+  display: flex;
+  flex-direction: column;
+  margin-top: ${({ theme }) => theme.spacing[150]};
+  padding: 0;
+  list-style: none;
+`;
+
+
 export const StyledLink = styled(NavLink)<CollapseProps>`
   cursor: pointer;
   display: flex;
@@ -38,7 +47,7 @@ export const StyledLink = styled(NavLink)<CollapseProps>`
 
   > span {
     display: flex;
-    color: ${({ theme }) => theme.colors.white};
+    color: ${({ theme }) => theme.colors.grey[300]};
     ${hideWhenCollapsed};
     ${typographyPreset[4]};
     white-space: nowrap;
