@@ -8,6 +8,8 @@ export const InputText: React.FC<InputTextProps> = ({
   helperText = '',
   required = false,
   onIconClick,
+  value,         // garante controle de digitação
+  onChange,      // garante controle de digitação
   ...rest
 }) => {
   return (
@@ -19,7 +21,10 @@ export const InputText: React.FC<InputTextProps> = ({
 
       <S.InputWrapper>
         {prefixItem && <S.Prefix>{prefixItem}</S.Prefix>}
-        <S.StyledInput {...rest} />
+
+        {/* input controlado */}
+        <S.StyledInput value={value} onChange={onChange} {...rest} />
+
         {icon &&
           (onIconClick ? (
             <S.IconButton type="button" onClick={onIconClick}>
@@ -34,4 +39,3 @@ export const InputText: React.FC<InputTextProps> = ({
     </S.Field>
   );
 };
-

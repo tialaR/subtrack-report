@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUserLocation } from "@services/hooks/tabulationDay/useUserLocation";
+import { useUserLocation } from "@hooks/useUserLocation";
 import { getCoordsByTimezone } from "@utils/tabulationHelper";
 
 type UseWeatherLocationParams = {

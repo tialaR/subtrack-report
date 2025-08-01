@@ -6,6 +6,7 @@ import {
   FiChevronsLeft,
   FiCloudRain,
   FiEye,
+  FiMapPin,
   // FiMapPin,
 } from "react-icons/fi";
 import Logo from "@assets/svg/Logo.svg?react";
@@ -13,6 +14,7 @@ import LogoIcon from "@assets/svg/LogoIcon.svg?react";
 import { SidebarNavItem } from "@components/SidebarNavItem";
 // import { SideBarSubMenu } from "@components/SideBarSubMenu";
 import * as S from "./styles";
+import { SideBarSubMenu } from "../SideBarSubMenu";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(true);
@@ -52,7 +54,7 @@ const Sidebar: React.FC = () => {
             label="Tabulação do dia"
             expanded={expanded}
           />
-          {/* <SidebarNavItem
+           <SidebarNavItem
             basePath="/inspecao-atuacao-granular"
             icon={<FiEye />}
             label="Inspeção Granular"
@@ -64,7 +66,7 @@ const Sidebar: React.FC = () => {
               itemIcon={<FiMapPin />}
               expanded={expanded}
             />
-          </SidebarNavItem> */}
+          </SidebarNavItem> 
         </S.Nav>
       </div>
 

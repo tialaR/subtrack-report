@@ -1,11 +1,10 @@
-// SideBarSubMenu.tsx
 import { defaultFormatRouteLabel } from "@utils/routeHelper";
-import { useUploadSubMap } from "@hooks/useUploadSubMap";
-import { useSubMapStore } from "@hooks/useSubMapStore";
 import * as S from "./styles";
 import type { SideBarSubMenuProps } from "./types";
-import { Button } from "../Button";
-import { Modal } from "@components/Modal";
+import { Button } from "@components/Button";
+import { useModal } from "@hooks/useModal";
+import { useEffect } from "react";
+import { ModalSubMapForm } from "@components/ModalSubMapForm";
 
 const SideBarSubMenu = ({
   basePath,
@@ -14,70 +13,23 @@ const SideBarSubMenu = ({
   expanded = false,
   formatRouteLabel = defaultFormatRouteLabel,
 }: SideBarSubMenuProps) => {
-  const { subMaps } = useSubMapStore();
-  const {
-    showModal,
-    setShowModal,
-    imageFile,
-    setImageFile,
-    handleUpload,
-    shouldOpenModal,
-  } = useUploadSubMap(basePath);
+  const { createModal, Modal, openModal, closeModal } = useModal();
 
-  // Abrir o modal automaticamente se não houver submaps
-  if (shouldOpenModal && !showModal) {
-    setShowModal(true);
-  }
+  useEffect(() => {
+    createModal({
+      size: "auto",
+      children: <ModalSubMapForm onClose={closeModal} />,
+    });
+  }, [createModal, closeModal]);
 
   return (
     <>
       <S.Container>
-        {subMaps?.map((subMap, index) => {
-          const path = `${basePath}/${subMap?.title}`;
-          const label = subMap?.title;
-          const subRouteLabel = expanded
-            ? formatRouteLabel({ label, labelFormat: labelFormat })
-            : ` - ${index + 1}`;
-
-          return (
-            <S.StyledLink
-              key={subMap?.id}
-              to={path}
-              $expanded={expanded}
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              {itemIcon}
-              <span>{subRouteLabel}</span>
-            </S.StyledLink>
-          );
-        })}
-
-        <Button
-          variant="tertiary"
-          showIcon
-          iconType="plus"
-          onClick={() => setShowModal(true)}
-        >
+        <Button variant="tertiary" showIcon iconType="plus" onClick={openModal}>
           {expanded && "Criar sub mapa"}
         </Button>
       </S.Container>
-
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Novo Sub Mapa"
-      >
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-        />
-        <S.ModalActions>
-          <button onClick={handleUpload} disabled={!imageFile}>
-            Criar
-          </button>
-        </S.ModalActions>
-      </Modal>
+      {Modal}
     </>
   );
 };

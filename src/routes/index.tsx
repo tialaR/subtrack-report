@@ -36,12 +36,12 @@ export const AppRoutes: React.FC = () => {
           element: <TabulationDay />,
           handle: { pageTitle: "Tabulação do Dia" },
         },
-        // {
-        //   path: "inspecao-atuacao-granular",
-        //   element: <UnderwaterInspection />,
-        //   handle: { pageTitle: "Inspeção de Atuação Granular" },
-        //   children: dynamicSubRoutes,
-        // },
+        {
+          path: "inspecao-atuacao-granular",
+          element: <UnderwaterInspection />,
+          handle: { pageTitle: "Inspeção de Atuação Granular" },
+          // children: dynamicSubRoutes,
+        },
         {
           path: "*",
           element: <NotFound />,

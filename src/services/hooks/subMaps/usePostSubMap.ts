@@ -14,6 +14,7 @@ export const usePostSubMap = () => {
     setLoading(true);
     try {
       const response = await api.post<SubMap>('/sub_maps', payload);
+      showToast({ type: "success", message: "Sub mapa criado com sucesso!" });
       setData(response.data);
       return response.data; 
     } catch (err: unknown | AxiosError) {

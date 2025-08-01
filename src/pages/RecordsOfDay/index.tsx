@@ -14,7 +14,7 @@ import { useDeleteRecordDayById } from "@services/hooks/recordsDay/useDeleteReco
 import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
 import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
 import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
-import { useDeleteRecordsDayPreview } from "@services/hooks/recordsDay/useDeleteRecordsDayPreview";
+import { useDeleteRecordsDayPreview } from "@services/hooks/recordsDay/useDeleteRecordsDayPreviewById";
 import { useRecordDayCapture } from "@services/hooks/recordsDay/useRecordDayCapture";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
 import type { RecordDay } from "@services/hooks/recordsDay/types";

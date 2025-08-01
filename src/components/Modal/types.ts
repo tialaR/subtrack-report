@@ -1,4 +1,4 @@
-export type ModalSize = "regular" | "medium" | "large";
+export type ModalSize = "regular" | "medium" | "large" | "auto";
 
 export type ModalProps = {
   isOpen: boolean;

@@ -20,6 +20,7 @@ const Modal: React.FC<ModalProps> = ({
               e.stopPropagation();
             }}
             iconType="close"
+            variant="outlined"
             size="medium"
           />
         </S.CloseButtonWrapper>

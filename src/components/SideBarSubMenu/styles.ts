@@ -65,10 +65,3 @@ export const StyledLink = styled(NavLink)<CollapseProps>`
     }
   }
 `;
-
-export const ModalActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1.5rem;
-  gap: 1rem;
-`;
