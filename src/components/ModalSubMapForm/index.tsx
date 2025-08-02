@@ -98,6 +98,12 @@ export const ModalSubMapForm: React.FC<ModalSubMapFormProps> = ({
           >
             Criar sub mapa
           </Button>
+          <Button
+            variant="secondary"
+            onClick={onClose}
+          >
+            Voltar
+          </Button>
         </StyleButtonsWrapper>
       </S.ModalContainer>
     </form>
