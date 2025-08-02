@@ -7,14 +7,12 @@ import {
   FiCloudRain,
   FiEye,
   FiMapPin,
-  // FiMapPin,
 } from "react-icons/fi";
 import Logo from "@assets/svg/Logo.svg?react";
 import LogoIcon from "@assets/svg/LogoIcon.svg?react";
 import { SidebarNavItem } from "@components/SidebarNavItem";
-// import { SideBarSubMenu } from "@components/SideBarSubMenu";
+import { SideBarSubMenu } from "@components/SideBarSubMenu";
 import * as S from "./styles";
-import { SideBarSubMenu } from "../SideBarSubMenu";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(true);
