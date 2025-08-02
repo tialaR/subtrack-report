@@ -55,7 +55,7 @@ export const ModalSubMapForm: React.FC<ModalSubMapFormProps> = ({
   if (subMapData) {
     setSubMapName("");
     setImage("");
-    onClose();
+    onClose()
   }
 };
 

@@ -5,6 +5,7 @@ import type { ModalSize } from '@components/Modal/types';
 type CreateModalParams = {
   children: React.ReactNode;
   size?: ModalSize;
+  disableOnClose?: boolean;
 };
 
 export const useModal = () => {
@@ -14,12 +15,12 @@ export const useModal = () => {
   const openModal = useCallback(() => setIsOpen(true), []);
   const closeModal = useCallback(() => setIsOpen(false), []);
 
-  const createModal = useCallback(({ children, size = 'regular' }: CreateModalParams) => {
-    setModalProps({ children, size });
+  const createModal = useCallback(({ children, size = 'regular', disableOnClose = false }: CreateModalParams) => {
+    setModalProps({ children, size, disableOnClose });
   }, []);
 
   const Modal = modalProps?.children ? (
-    <ModalBase isOpen={isOpen} onClose={closeModal} size={modalProps.size}>
+    <ModalBase isOpen={isOpen} onClose={() => modalProps.disableOnClose ? null : closeModal()} size={modalProps.size}>
       {modalProps.children}
     </ModalBase>
   ) : null;

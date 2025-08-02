@@ -5,7 +5,7 @@ import { useToastInfo } from '@hooks/useToastInfo';
 import type { SubMap } from './types';
 
 export const useGetSubMaps = () => {
-  const [data, setData] = useState<SubMap[]>([]);
+  const [data, setData] = useState<SubMap[]>([] as SubMap[]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
