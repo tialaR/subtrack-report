@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FiChevronDown } from "react-icons/fi";
 import { useState, useEffect, useCallback } from "react";
 import * as S from "./styles";
+import { useSubMapModalGuard } from "@hooks/useSubMapModalGuard";
 
 type SidebarNavItemProps = {
   basePath: string;
@@ -22,6 +23,8 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
   children,
   replaceOnNavigate = false,
 }) => {
+  useSubMapModalGuard("/inspecao-atuacao-granular");
+  
   const location = useLocation();
   const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
@@ -56,14 +59,7 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
-  }, [
-    children,
-    openChildren,
-    basePath,
-    navigate,
-    location.pathname,
-    replaceOnNavigate,
-  ]);
+  }, [children, openChildren, basePath, navigate, location.pathname, replaceOnNavigate]);
 
   return (
     <>
@@ -72,7 +68,7 @@ const SidebarNavItem: React.FC<SidebarNavItemProps> = ({
         onClick={handleClick}
         $expanded={expanded}
         $active={isActive}
-        aria-expanded={openChildren} // Acessibility
+        aria-expanded={openChildren}
       >
         {icon}
         <span>{label}</span>

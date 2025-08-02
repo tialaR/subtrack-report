@@ -8,7 +8,7 @@ export const useSubMapModalGuard = (basePath: string) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { subMaps, isSubMapsLoading } = useSubMapsContext();
-  const { createModal, openModal, closeModal, Modal } = useModal();
+  const { createModal, openModal, closeModal } = useModal();
 
   const modalCreated = useRef(false);
   const hasNavigatedBack = useRef(false);
@@ -112,5 +112,5 @@ export const useSubMapModalGuard = (basePath: string) => {
     navigate
   ]);
 
-  return { Modal, openModal };
+  return { openModal };
 };

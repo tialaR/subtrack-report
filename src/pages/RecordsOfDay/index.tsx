@@ -42,7 +42,7 @@ const RecordsOfDay: React.FC = () => {
   const { deleteRecordsDayPreview } = useDeleteRecordsDayPreview();
   const { containerRef, handlePersist } = useRecordDayCapture();
 
-  const { Modal, openModal, createModal } = useModal();
+  const { openModal, createModal } = useModal();
 
   const hasMounted = useRef(false);
 
@@ -242,7 +242,6 @@ const RecordsOfDay: React.FC = () => {
           </S.Message>
         )}
       </S.Container>
-      {Modal}
 
       {renderHiddenPreview && (
         <div style={{ position: "absolute", top: -9999, left: -9999 }}>

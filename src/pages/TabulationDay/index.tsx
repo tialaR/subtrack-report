@@ -15,7 +15,7 @@ import { StyleButtonsWrapper } from "@styles/StyleComponets";
 import * as S from "./styles";
 
 export const TabulationDay = () => {
-  const { createModal, Modal, openModal } = useModal();
+  const { createModal, openModal } = useModal();
 
   const tabulationRef = useRef<HTMLDivElement>(null);
 
@@ -163,8 +163,7 @@ export const TabulationDay = () => {
           </S.WeatherCard>
         ))}
       </S.WeatherGrid>
-      <AccordionWeatherLegend />
-      {Modal}
+      <AccordionWeatherLegend />    
     </>
   );
 };

@@ -14,7 +14,7 @@ const SideBarSubMenu = ({
 }: SideBarSubMenuProps) => {
   const { subMaps } = useSubMapsContext();
 
-  const { Modal, openModal } = useSubMapModalGuard(basePath);
+  const { openModal } = useSubMapModalGuard(basePath);
 
   return (
     <>
@@ -38,7 +38,6 @@ const SideBarSubMenu = ({
           {expanded && "Criar sub mapa"}
         </Button>
       </S.Container>
-      {Modal}
     </>
   );
 };
