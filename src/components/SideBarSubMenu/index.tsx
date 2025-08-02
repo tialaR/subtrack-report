@@ -3,9 +3,10 @@ import * as S from "./styles";
 import type { SideBarSubMenuProps } from "./types";
 import { Button } from "@components/Button";
 import { useModal } from "@hooks/useModal";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ModalSubMapForm } from "@components/ModalSubMapForm";
 import { useGetSubMaps } from "@services/hooks/subMaps/useGetSubMaps";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const SideBarSubMenu = ({
   basePath,
@@ -14,19 +15,46 @@ const SideBarSubMenu = ({
   expanded = false,
   formatRouteLabel = defaultFormatRouteLabel,
 }: SideBarSubMenuProps) => {
-  const { createModal, Modal, openModal, closeModal } = useModal();
-  const { subMaps, getSubMaps } = useGetSubMaps();
+   const { createModal, Modal, openModal, closeModal } = useModal();
+  const { subMaps, getSubMaps, loading: isLoadingGetSubMaps } = useGetSubMaps();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const modalInitialized = useRef(false);
+  const redirectEvaluated = useRef(false);
 
   useEffect(() => {
     getSubMaps();
   }, []);
 
   useEffect(() => {
-    createModal({
-      size: "auto",
-      children: <ModalSubMapForm onClose={closeModal} />,
-    });
+    if (!modalInitialized.current) {
+      createModal({
+        size: "auto",
+        children: <ModalSubMapForm onClose={closeModal} />,
+      });
+      modalInitialized.current = true;
+    }
   }, [createModal, closeModal]);
+
+  useEffect(() => {
+    const isRootPath = location.pathname === basePath;
+    if (
+      !isRootPath ||
+      redirectEvaluated.current ||
+      !modalInitialized.current ||
+      isLoadingGetSubMaps ||
+      !subMaps
+    )
+      return;
+
+    redirectEvaluated.current = true;
+
+    if (subMaps.length > 0) {
+      navigate(`${basePath}/${subMaps[0].id}`);
+    } else {
+      openModal();
+    }
+  }, [subMaps, basePath, navigate, openModal, location.pathname, isLoadingGetSubMaps]);
 
   return (
     <>
