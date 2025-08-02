@@ -12,15 +12,21 @@ const hideWhenCollapsed = css<CollapseProps>`
   transition: opacity 0.3s ease;
 `;
 
-export const Container = styled.div`
+export const Container = styled.div<CollapseProps>`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  justify-content: start;
+
+  > button {
+    display: flex;
+    padding: ${({ theme }) => theme.spacing[200]} ${({ theme }) => theme.spacing[500]};
+  }
 `;
 
 export const SubMenuList = styled.ul`
   display: flex;
   flex-direction: column;
-  margin-top: ${({ theme }) => theme.spacing[150]};
   padding: 0;
   list-style: none;
 `;
@@ -31,7 +37,7 @@ export const StyledLink = styled(NavLink)<CollapseProps>`
   display: flex;
   align-items: center;
   padding: ${({ theme }) => theme.spacing[200]};
-  margin-left: ${({ theme }) => theme.spacing[400]};
+  margin-left: ${({ theme, $expanded }) => $expanded ? theme.spacing[300] : theme.spacing[150]};
   text-decoration: none;
 
   gap: ${({ $expanded, theme }) =>

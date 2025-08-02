@@ -18,9 +18,9 @@ const SideBarSubMenu = ({
 
   return (
     <>
-      <S.Container>
+      <S.Container $expanded={expanded}>
         <S.SubMenuList>
-          {subMaps?.map((subMap) => (
+          {subMaps?.map((subMap, index) => (
             <S.StyledLink
               key={subMap?.id}
               to={`${basePath}/${subMap?.id}`}
@@ -29,13 +29,15 @@ const SideBarSubMenu = ({
             >
               {itemIcon && <>{itemIcon}</>}
               <span>
-                {expanded && formatRouteLabel({ label: subMap?.title, labelFormat })}
+                {expanded
+                  ? formatRouteLabel({ label: subMap?.title, labelFormat })
+                  : ` - ${index + 1}`}
               </span>
             </S.StyledLink>
           ))}
         </S.SubMenuList>
-        <Button variant="tertiary" showIcon iconType="plus" onClick={openModal}>
-          {expanded && "Criar sub mapa"}
+        <Button variant="tertiary" showIcon iconType="add" onClick={openModal}>
+          {expanded && "Criar novo sub mapa"}
         </Button>
       </S.Container>
     </>

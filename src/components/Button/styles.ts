@@ -107,7 +107,7 @@ export const Button = styled.button<ButtonProps>`
           color: ${theme.colors.grey[500]};
           align-items: center;
           justify-content: flex-start;
-          ${typographyPreset[4.1]};
+          ${typographyPreset[3.1]};
 
           > svg {
             width: ${theme.spacing[200]};
