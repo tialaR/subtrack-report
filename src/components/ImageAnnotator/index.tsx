@@ -5,8 +5,14 @@ import { MarkerToolbox } from "@components/MarkerToolBox";
 import { MainDescription } from "@components/MainDescription";
 import { Button } from "@components/Button";
 import { ButtonIcon } from "@components/ButtonIcon";
-import type { ImageAnnotatorProps, Point, MarkerOption, ImageAnnotatorData } from "./types";
+import type {
+  ImageAnnotatorProps,
+  Point,
+  MarkerOption,
+  ImageAnnotatorData,
+} from "./types";
 import * as S from "./styles";
+import { markersOptions } from "@utils/marker";
 
 export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   id,
@@ -15,14 +21,18 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   markers,
   updateMarkers,
   onSnapshotReady,
+  onUpdateImage,
 }) => {
   const [scale, setScale] = useState(1);
   const [history, setHistory] = useState<Point[][]>([]);
   const [redoStack, setRedoStack] = useState<Point[][]>([]);
-  const [selectedMarker, setSelectedMarker] = useState<MarkerOption | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<MarkerOption | null>(
+    null
+  );
   const [isToolbarHidden, setIsToolbarHidden] = useState(false);
   const [manualHide, setManualHide] = useState(false);
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  const [hideToolbox, setHideToolbox] = useState(false);
 
   const renderAreaRef = useRef<HTMLDivElement | null>(null);
   const imageElementRef = useRef<HTMLImageElement | null>(null);
@@ -56,25 +66,33 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
 
   const pushToHistory = useCallback(
     (newPoints: Point[]) => {
-      setHistory((prev) => [...prev, markers]);
+      setHistory((prev): Point[][] => [...prev, markers || []]);
       setRedoStack([]);
       updateMarkers(newPoints);
     },
     [markers, updateMarkers]
   );
 
+  useEffect(() => {
+    if (id && markers) {
+      pushToHistory([[...markers]]); // Alimenta histórico com o estado inicial vindo do servidor
+    }
+  }, [markers, id]);
+
   const undoAction = useCallback(() => {
     if (history.length === 0) return;
     const last = history[history.length - 1];
-    setRedoStack((r) => [markers, ...r]);
+    setRedoStack((r): Point[][] => [markers, ...r]);
     updateMarkers(last);
-    setHistory((h) => h.slice(0, -1));
+    alert(JSON.stringify(last));
+    setHistory((h): Point[][] => h.slice(0, -1));
   }, [history, markers, updateMarkers]);
 
   const redoAction = useCallback(() => {
     if (redoStack.length === 0) return;
     const [next, ...rest] = redoStack;
-    setHistory((h) => [...h, markers]);
+    setHistory((h): Point[][] => [...h, markers]);
+    alert(JSON.stringify(next));
     updateMarkers(next);
     setRedoStack(rest);
   }, [redoStack, markers, updateMarkers]);
@@ -82,15 +100,15 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   const clearMarkers = useCallback(() => pushToHistory([]), [pushToHistory]);
 
   const handleSnapshot = useCallback(async () => {
-    if (!renderAreaRef.current || markers.length === 0) return;
+    if (!renderAreaRef.current || (markers && markers?.length === 0)) return;
 
     const container = renderAreaRef.current.getBoundingClientRect();
     const marginX = 80;
     const marginY = 80;
 
-const minX = Math.max(
+    const minX = Math.max(
       0,
-      Math.min(...markers.map((p) => p.x)) * scale - marginX
+      Math.min(...markers?.map((p) => p.x)) * scale - marginX
     );
     const minY = Math.max(
       0,
@@ -130,6 +148,26 @@ const minX = Math.max(
     onSnapshotReady(snapshot);
   }, [markers, scale, id, onSnapshotReady]);
 
+  const handleUpdateImage = useCallback(async () => {
+    if (!renderAreaRef.current || markers.length === 0) return;
+
+    setHideToolbox(true); // Esconde toolbox
+
+    await new Promise((r) => setTimeout(r, 100)); // Espera o DOM atualizar
+
+    const canvas = await html2canvas(renderAreaRef.current, {
+      backgroundColor: null,
+      scale: 1,
+    });
+
+    const dataURL = canvas.toDataURL();
+
+    const snapshotImg = dataURL;
+    onUpdateImage({ image: snapshotImg});
+
+    setHideToolbox(false); // Restaura toolbox
+  }, [markers, id, onUpdateImage]);
+
   const zoomIn = () => setScale((prev) => Math.min(prev + 0.1, 2));
   const zoomOut = () => setScale((prev) => Math.max(prev - 0.1, 0.5));
   const resetZoom = () => setScale(1);
@@ -142,7 +180,11 @@ const minX = Math.max(
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isDragging.current && containerRef.current && lastMousePosition.current) {
+    if (
+      isDragging.current &&
+      containerRef.current &&
+      lastMousePosition.current
+    ) {
       const dx = e.clientX - lastMousePosition.current.x;
       const dy = e.clientY - lastMousePosition.current.y;
       containerRef.current.scrollLeft -= dx;
@@ -157,7 +199,12 @@ const minX = Math.max(
   };
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!selectedMarker?.value || !imageElementRef.current || !renderAreaRef.current) return;
+    if (
+      !selectedMarker?.value ||
+      !imageElementRef.current ||
+      !renderAreaRef.current
+    )
+      return;
 
     const zoomRect = renderAreaRef.current.getBoundingClientRect();
     const offsetX = containerRef.current
@@ -167,17 +214,32 @@ const minX = Math.max(
       ? (e.clientY - zoomRect.top + containerRef.current.scrollTop) / scale
       : 0;
 
-    if (offsetX < 0 || offsetY < 0 || offsetX > imageSize.width || offsetY > imageSize.height) return;
+    if (
+      offsetX < 0 ||
+      offsetY < 0 ||
+      offsetX > imageSize.width ||
+      offsetY > imageSize.height
+    )
+      return;
 
     const radius = 8;
     const index = markers.findIndex(
-      (p) => Math.abs(p.x - offsetX) < radius && Math.abs(p.y - offsetY) < radius
+      (p) =>
+        Math.abs(p.x - offsetX) < radius && Math.abs(p.y - offsetY) < radius
     );
 
     const newPoints =
       index !== -1
         ? markers.filter((_, i) => i !== index)
-        : [...markers, { x: offsetX, y: offsetY, color: selectedMarker.value }];
+        : [
+            ...markers,
+            {
+              id: uuidv4(),
+              x: offsetX,
+              y: offsetY,
+              color: selectedMarker.value,
+            },
+          ];
 
     pushToHistory(newPoints);
   };
@@ -193,7 +255,11 @@ const minX = Math.max(
           <ButtonIcon
             size="large"
             isToggle
-            title={manualHide ? "Mostrar barra de ferramentas" : "Ocultar barra de ferramentas"}
+            title={
+              manualHide
+                ? "Mostrar barra de ferramentas"
+                : "Ocultar barra de ferramentas"
+            }
             variant={manualHide ? "filled" : "outlined"}
             iconType={manualHide ? "chevronsRight" : "chevronsLeft"}
             onClick={() => setManualHide((prev) => !prev)}
@@ -201,26 +267,77 @@ const minX = Math.max(
         </S.ToggleButtonArea>
 
         <S.FloatingToolbar $hidden={isToolbarHidden || manualHide}>
-          <Button title="Zoom In" variant="secondary" iconType="zoomIn" showIcon onClick={zoomIn}>
+          <Button
+            title="Zoom In"
+            variant="secondary"
+            iconType="zoomIn"
+            showIcon
+            onClick={zoomIn}
+          >
             Zoom In
           </Button>
-          <Button title="Zoom Out" variant="secondary" iconType="zoomOut" showIcon onClick={zoomOut}>
+          <Button
+            title="Zoom Out"
+            variant="secondary"
+            iconType="zoomOut"
+            showIcon
+            onClick={zoomOut}
+          >
             Zoom Out
           </Button>
-          <Button title="Resetar Zoom" variant="secondary" iconType="rotate" showIcon onClick={resetZoom}>
+          <Button
+            title="Resetar Zoom"
+            variant="secondary"
+            iconType="rotate"
+            showIcon
+            onClick={resetZoom}
+          >
             Reset Zoom
           </Button>
-          <Button title="Desfazer Ação" variant="secondary" iconType="cornerBack" showIcon onClick={undoAction}>
+          <Button
+            title="Desfazer Ação"
+            variant="secondary"
+            iconType="cornerBack"
+            showIcon
+            onClick={undoAction}
+          >
             Desfazer
           </Button>
-          <Button title="Refazer Ação" variant="secondary" iconType="cornerForward" showIcon onClick={redoAction}>
+          <Button
+            title="Refazer Ação"
+            variant="secondary"
+            iconType="cornerForward"
+            showIcon
+            onClick={redoAction}
+          >
             Refazer
           </Button>
-          <Button title="Limpar Marcadores" variant="secondary" iconType="deleteAlt" showIcon onClick={clearMarkers}>
+          <Button
+            title="Limpar Marcadores"
+            variant="secondary"
+            iconType="deleteAlt"
+            showIcon
+            onClick={clearMarkers}
+          >
             Limpar Marcadores
           </Button>
-          <Button title="Capturar Snapshot" variant="secondary" iconType="camera" showIcon onClick={handleSnapshot}>
+          <Button
+            title="Capturar Snapshot"
+            variant="secondary"
+            iconType="camera"
+            showIcon
+            onClick={handleSnapshot}
+          >
             Capturar Snapshot
+          </Button>
+          <Button
+            title="Salvar Atualizações"
+            variant="secondary"
+            iconType="map"
+            showIcon
+            onClick={handleUpdateImage}
+          >
+            Salvar Atualizações
           </Button>
         </S.FloatingToolbar>
       </S.FloatingToolbarWrapper>
@@ -257,14 +374,16 @@ const minX = Math.max(
               />
             ))}
 
-            <MarkerToolbox
-              markersOptions={[]}
-              onSelectMarker={(selectMarker) =>
-                setSelectedMarker((prev) =>
-                  prev?.value === selectMarker.value ? prev : selectMarker
-                )
-              }
-            />
+            {!hideToolbox && (
+              <MarkerToolbox
+                markersOptions={markersOptions}
+                onSelectMarker={(selectMarker) =>
+                  setSelectedMarker((prev) =>
+                    prev?.value === selectMarker.value ? prev : selectMarker
+                  )
+                }
+              />
+            )}
           </S.ZoomWrapper>
         </S.ImageContainer>
       </S.ImageAnnotatorWrapper>

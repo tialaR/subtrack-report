@@ -32,6 +32,7 @@ const SubMap: React.FC<SubMapProps> = ({ id, title, image, markers }) => {
 
   return (
     <ImageAnnotator
+      key={id}
       id={id}
       image={image}
       title={title}

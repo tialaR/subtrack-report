@@ -28,11 +28,10 @@ export const ZoomWrapper = styled.div<{
 
   > img {
     width: 100%;
-    height: 100%;
+    height: auto;
     object-fit: contain;
-    user-select: none;
-    pointer-events: none;
     display: block;
+    pointer-events: none;
   }
 `;
 

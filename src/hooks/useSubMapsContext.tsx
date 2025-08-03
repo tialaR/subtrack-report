@@ -29,7 +29,7 @@ export const SubMapProvider = ({ children }: { children: React.ReactNode }) => {
       hasFetched.current = true;
       getSubMaps();
     }
-  }, [getSubMaps]);
+  }, []);
 
   return (
     <SubMapContext.Provider

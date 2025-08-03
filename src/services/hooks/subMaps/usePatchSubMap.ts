@@ -5,6 +5,7 @@ import { useToastInfo } from '@hooks/useToastInfo';
 import type { SubMap } from './types';
 
 export const usePatchSubMapById = () => {
+  const [data, setData] = useState<SubMap>({} as SubMap);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
@@ -14,6 +15,7 @@ export const usePatchSubMapById = () => {
     try {
       const response = await api.patch<SubMap>(`/sub_maps/${id}`, payload);
       return response.data;
+      setData(data);
     } catch (err: unknown | AxiosError) {
       const message = err instanceof AxiosError ? err : 'Erro ao atualizar parcialmente';
       setError(message);
@@ -27,5 +29,5 @@ export const usePatchSubMapById = () => {
     }
   };
 
-  return { patchSubMapById, loading, error };
+  return { patchSubMapById, data, loading, error };
 };
