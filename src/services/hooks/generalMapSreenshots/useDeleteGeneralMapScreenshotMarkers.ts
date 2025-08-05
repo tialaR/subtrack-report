@@ -8,7 +8,7 @@ export const useDeleteGeneralMapScreenshotMarkers = () => {
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const remove = async (id: string) => {
+  const deleteGeneralMapScreenshotMarkers = async (id: string) => {
     setLoading(true);
     try {
       await api.delete(`/general_map_screenshot_markers/${id}`);
@@ -25,5 +25,5 @@ export const useDeleteGeneralMapScreenshotMarkers = () => {
     }
   };
 
-  return { remove, loading, error };
+  return { deleteGeneralMapScreenshotMarkers, loading, error };
 };

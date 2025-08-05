@@ -1,60 +1,26 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import type { SnapshotItem } from '@components/SnapshotBubble/types';
-
-const STORAGE_KEY_SNAPSHOT_PREFIX = '@maptrack-report:snapshot-';
+import type { ScreenshotMarker as SnapshotItem } from '@services/hooks/generalMapSreenshots/types';
+import {
+  useGetGeneralMapScreenshotMarkers,
+  usePostGeneralMapScreenshotMarkers,
+  usePatchGeneralMapScreenshotMarkers,
+  usePutGeneralMapScreenshotMarkers,
+  useDeleteGeneralMapScreenshotMarkers,
+} from '@services/hooks/generalMapSreenshots';
 
 export const useSnapshotStorage = () => {
   const [snapshots, setSnapshots] = useState<SnapshotItem[]>([]);
   const initializedRef = useRef(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const loadSnapshots = useCallback(() => {
-    const loaded: SnapshotItem[] = [];
-
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(STORAGE_KEY_SNAPSHOT_PREFIX)) {
-        try {
-          const raw = localStorage.getItem(key);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (parsed.id && parsed.timestamp) loaded.push(parsed);
-          }
-        } catch (err) {
-          console.error(`Erro ao carregar snapshot: ${key}`, err);
-        }
-      }
-    });
-
-    return loaded.sort((a, b) => a.timestamp - b.timestamp);
-  }, []);
-
-  const saveSnapshots = useCallback((items: SnapshotItem[]) => {
-    items.forEach((item) => {
-      const key = `${STORAGE_KEY_SNAPSHOT_PREFIX}${item.title}-${item.id}`;
-      localStorage.setItem(key, JSON.stringify(item));
-    });
-  }, []);
-
-  const saveSingleSnapshot = useCallback(({ snapshotItem, title }: { snapshotItem: SnapshotItem, title: string }) => {
-    if (!snapshotItem || !title) return;
-    const key = `${STORAGE_KEY_SNAPSHOT_PREFIX}${title}-${snapshotItem.id}`;
-
-    const snapshot: SnapshotItem = {
-      id: snapshotItem.id,
-      x: snapshotItem.x,
-      y: snapshotItem.y,
-      rotation: snapshotItem.rotation,
-      title: title,
-      snapshotImg: snapshotItem.snapshotImg,
-      timestamp: snapshotItem.timestamp ?? Date.now(),
-      isNewPosition: snapshotItem.isNewPosition ?? true,
-    };
-
-    localStorage.setItem(key, JSON.stringify(snapshot));
-  }, []);
+  const { data, getGeneralMapScreenshotMarkers } = useGetGeneralMapScreenshotMarkers();
+  const { postGeneralMapScreenshotMarkers } = usePostGeneralMapScreenshotMarkers();
+  const { patchGeneralMapScreenshotMarkers } = usePatchGeneralMapScreenshotMarkers();
+  const { putGeneralMapScreenshotMarkers } = usePutGeneralMapScreenshotMarkers();
+  const { deleteGeneralMapScreenshotMarkers } = useDeleteGeneralMapScreenshotMarkers();
 
   const applyInitialPositioning = useCallback(
-    (items: SnapshotItem[], wrapper: HTMLDivElement | null) => {
+    (items: SnapshotItem[], wrapper: HTMLDivElement | null): SnapshotItem[] => {
       if (!wrapper) return items;
 
       const spacing = 50;
@@ -62,7 +28,7 @@ export const useSnapshotStorage = () => {
       const bubbleWidth = 250;
       const total = items.length;
 
-      const positioned = items.map((item, index) => {
+      return items.map((item, index) => {
         const invertedIndex = total - 1 - index;
         const x = wrapper.offsetWidth - bubbleWidth - marginRight;
         const y = 16 + invertedIndex * spacing;
@@ -72,68 +38,80 @@ export const useSnapshotStorage = () => {
           x,
           y,
           rotation: 0,
-          isNewPosition: true,
           timestamp: item.timestamp ?? Date.now(),
+          is_new_position: true,
         };
       });
-
-      saveSnapshots(positioned);
-      return positioned;
     },
-    [saveSnapshots]
+    []
   );
 
   useEffect(() => {
     if (!initializedRef.current && wrapperRef.current) {
-      const loaded = loadSnapshots();
-      const shouldReposition = loaded.some((s) => s.isNewPosition !== false);
+      getGeneralMapScreenshotMarkers();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!initializedRef.current && data && data.length > 0 && wrapperRef.current) {
+      const shouldReposition = data.some((s) => s.is_new_position !== false);
       const positioned = shouldReposition
-        ? applyInitialPositioning(loaded, wrapperRef.current)
-        : loaded;
+        ? applyInitialPositioning(data, wrapperRef.current)
+        : data;
       setSnapshots(positioned);
       initializedRef.current = true;
     }
-  }, [loadSnapshots, applyInitialPositioning]);
+  }, [data, applyInitialPositioning]);
 
   const updateSnapshot = useCallback(
     (updated: SnapshotItem) => {
+      patchGeneralMapScreenshotMarkers(updated.id, updated);
       setSnapshots((prev) => {
         const updatedList = prev.map((s) => (s.id === updated.id ? updated : s));
         const sorted = [...updatedList].sort((a, b) => a.timestamp - b.timestamp);
-        saveSnapshots(sorted);
         return sorted;
       });
     },
-    [saveSnapshots]
+    []
   );
 
-  const removeSnapshot = useCallback((id: string) => {
-    setSnapshots((prev) => {
-      const target = prev.find((s) => s.id === id);
-      if (target) {
-        const key = `${STORAGE_KEY_SNAPSHOT_PREFIX}${target.title}-${target.id}`;
-        localStorage.removeItem(key);
-      }
-      return prev.filter((s) => s.id !== id);
-    });
-  }, []);
+  const saveSingleSnapshot = useCallback(
+    async ({ snapshotItem, title }: { snapshotItem: SnapshotItem; title: string }) => {
+      const newSnapshot: SnapshotItem = {
+        ...snapshotItem,
+        title,
+        timestamp: snapshotItem.timestamp ?? Date.now(),
+        is_new_position: true,
+        image: snapshotItem.image,
+      };
+      const response = await postGeneralMapScreenshotMarkers(newSnapshot);
+      setSnapshots((prev) => [...prev, response]);
+    },
+    [postGeneralMapScreenshotMarkers]
+  );
 
-  const removeAllSnapshots = useCallback(() => {
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith(STORAGE_KEY_SNAPSHOT_PREFIX)) {
-        localStorage.removeItem(key);
-      }
-    });
+  const removeSnapshot = useCallback(
+    async (id: string) => {
+      await deleteGeneralMapScreenshotMarkers(id);
+      setSnapshots((prev) => prev.filter((s) => s.id !== id));
+    },
+    [deleteGeneralMapScreenshotMarkers]
+  );
+
+  const removeAllSnapshots = useCallback(async () => {
+    await Promise.all(snapshots.map((s) => deleteGeneralMapScreenshotMarkers(s.id)));
     setSnapshots([]);
-  }, []);
+  }, [snapshots, deleteGeneralMapScreenshotMarkers]);
 
-  const resetSnapshots = useCallback(() => {
+  const resetSnapshots = useCallback(async () => {
     if (wrapperRef.current) {
-      const loaded = loadSnapshots();
-      const repositioned = applyInitialPositioning(loaded, wrapperRef.current);
+      const repositioned = applyInitialPositioning(snapshots, wrapperRef.current);
+      await Promise.all(
+        repositioned.map((item) => putGeneralMapScreenshotMarkers(item.id, item))
+      );
       setSnapshots(repositioned);
     }
-  }, [loadSnapshots, applyInitialPositioning]);
+  }, [snapshots, applyInitialPositioning, putGeneralMapScreenshotMarkers]);
 
   return {
     snapshots,

@@ -10,7 +10,7 @@ export const useGetGeneralMapScreenshotMarkers = () => {
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const fetchData = async () => {
+  const getGeneralMapScreenshotMarkers = async () => {
     setLoading(true);
     try {
       const response = await api.get<ScreenshotMarker[]>('/general_map_screenshot_markers');
@@ -28,5 +28,5 @@ export const useGetGeneralMapScreenshotMarkers = () => {
     }
   };
 
-  return { data, loading, error, fetchData };
+  return { data, loading, error, getGeneralMapScreenshotMarkers };
 };

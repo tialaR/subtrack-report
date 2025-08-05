@@ -9,7 +9,7 @@ export const usePutGeneralMapScreenshotMarkers = () => {
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const update = async (id: string, payload: Partial<ScreenshotMarker>) => {
+  const putGeneralMapScreenshotMarkers = async (id: string, payload: Partial<ScreenshotMarker>) => {
     setLoading(true);
     try {
       const response = await api.put<ScreenshotMarker>(`/general_map_screenshot_markers/${id}`, payload);
@@ -27,5 +27,5 @@ export const usePutGeneralMapScreenshotMarkers = () => {
     }
   };
 
-  return { update, loading, error };
+  return { putGeneralMapScreenshotMarkers, loading, error };
 };

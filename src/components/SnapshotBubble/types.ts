@@ -1,21 +1,12 @@
-export type SnapshotItem = {
-  id: string;
-  x: number;
-  y: number;
-  rotation: number;
-  snapshotImg: string;
-  title?: string;
-  timestamp: number;
-  isNewPosition: boolean;
-};
+import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
 
 export type SnapshotBubbleProps = {
   id: string;
   title: string;
-  snapshot: SnapshotItem;
+  snapshot: ScreenshotMarker;
   wrapperRef: React.RefObject<HTMLDivElement | null>;
   initialOffsetIndex: number;
   totalSnapshots: number;
-  onUpdate: (updated: SnapshotItem) => void;
+  onUpdate: (updated: ScreenshotMarker) => void;
   onRemove: () => void;
 };

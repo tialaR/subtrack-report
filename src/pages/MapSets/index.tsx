@@ -33,10 +33,16 @@ const MapSets: React.FC = () => {
     getGeneralMap();
   }, []);
 
+  // useEffect(() => {
+  //   alert(JSON.stringify(snapshots))
+  // }, [snapshots])
+
   const renderHeader = () => {
     return (
       <div>
-        <MainDescription>{generalMap?.content ?? "CARREGANDO DESCRIÇÃO..."}</MainDescription>
+        <MainDescription>
+          {generalMap?.content ?? "CARREGANDO DESCRIÇÃO..."}
+        </MainDescription>
 
         <StyleButtonsWrapper>
           <Button
@@ -82,12 +88,14 @@ const MapSets: React.FC = () => {
 
       <S.MapWrapper ref={wrapperRef}>
         <S.MapImage src={generalMap?.image} alt={generalMap?.title} />
-        <SnapshotBubbles
-          wrapperRef={wrapperRef}
-          snapshots={snapshots}
-          onUpdate={updateSnapshot}
-          onDelete={removeSnapshot}
-        />
+        {snapshots.length > 0 && (
+          <SnapshotBubbles
+            wrapperRef={wrapperRef}
+            snapshots={snapshots}
+            onUpdate={updateSnapshot}
+            onDelete={removeSnapshot}
+          />
+        )}
       </S.MapWrapper>
     </S.Container>
   );

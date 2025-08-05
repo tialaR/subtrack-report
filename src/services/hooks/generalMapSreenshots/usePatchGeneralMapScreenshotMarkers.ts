@@ -9,10 +9,10 @@ export const usePatchGeneralMapScreenshotMarkers = () => {
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const patch = async (id: string, payload: Partial<ScreenshotMarker>) => {
+  const patchGeneralMapScreenshotMarkers = async (id: string, payload: Partial<ScreenshotMarker>) => {
     setLoading(true);
     try {
-      const response = await api.patch<ScreenshotMarker>(`/general_map_screenshot_markers/'${id}`, payload);
+      const response = await api.patch<ScreenshotMarker>(`/general_map_screenshot_markers/${id}`, payload);
       return response.data;
     } catch (err: unknown | AxiosError) {
       const message = err instanceof AxiosError ? err : 'Erro ao atualizar parcialmente';
@@ -27,5 +27,5 @@ export const usePatchGeneralMapScreenshotMarkers = () => {
     }
   };
 
-  return { patch, loading, error };
+  return { patchGeneralMapScreenshotMarkers, loading, error };
 };

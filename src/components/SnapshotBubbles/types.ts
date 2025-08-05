@@ -1,8 +1,8 @@
-import type { SnapshotItem } from "@components/SnapshotBubble/types";
+import type { ScreenshotMarker } from '@services/hooks/generalMapSreenshots/types';
 
 export type SnapshotBubblesProps = {
   wrapperRef: React.RefObject<HTMLDivElement | null>;
-  snapshots: SnapshotItem[];
-  onUpdate: (updated: SnapshotItem) => void;
+  snapshots: ScreenshotMarker[];
+  onUpdate: (updated: ScreenshotMarker) => void;
   onDelete: (id: string) => void;
 };

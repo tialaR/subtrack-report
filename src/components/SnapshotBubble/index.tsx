@@ -55,13 +55,31 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
 
     if (clampedX !== position.x || clampedY !== position.y) {
       setPosition({ x: clampedX, y: clampedY });
+      console.log({
+        ...snapshot,
+        x: clampedX,
+        y: clampedY,
+        rotation,
+        is_new_position: false,
+      })
       onUpdate({
         ...snapshot,
         x: clampedX,
         y: clampedY,
         rotation,
-        isNewPosition: false,
+        is_new_position: false,
       });
+
+      // onUpdate({
+      //   id: snapshot.id,
+      //   title: snapshot.title,
+      //   image: snapshot.image,
+      //   x: clampedX,
+      //   y: clampedY,
+      //   rotation,
+      //   timestamp: snapshot.timestamp,
+      //   is_new_position: false,
+      // });
     }
   };
 
@@ -116,7 +134,7 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
         onUpdate({
           ...snapshot,
           rotation: next,
-          isNewPosition: false,
+          is_new_position: false,
         });
       }
       return next;
@@ -152,7 +170,7 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
         />
       </S.BubbleHeader>
 
-      <S.BubbleImage src={snapshot.snapshotImg} alt={title} />
+      <S.BubbleImage src={snapshot.image} alt={title} />
 
       <RotationAnchors
         icon={<FiRotateCcw />}
