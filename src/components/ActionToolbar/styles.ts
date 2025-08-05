@@ -18,7 +18,6 @@ export const ActionToolbarWrapper = styled.div<ActionToolbarWrapperProps>`
   position: relative;
   display: flex;
   align-items: flex-start;
-  padding: ${({ theme }) => theme.spacing[200]} ${({ theme }) => theme.spacing[300]};
   z-index: 100;
   flex-direction: ${({ $vertical }) => ($vertical ? "column" : "row")};
   gap: ${({ theme }) => theme.spacing[100]};
@@ -51,7 +50,6 @@ export const ActionToolbar = styled.div<ActionToolbarProps>`
         : "translateX(-120%)"
       : "translate(0, 0)"};
   transition: transform 0.5s ease, max-height 0.5s ease;
-  padding: ${({ theme }) => theme.spacing[200]} ${({ theme }) => theme.spacing[300]};
   gap: ${({ theme }) => theme.spacing[150]};
   z-index: 100;
 `;

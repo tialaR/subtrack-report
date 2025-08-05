@@ -5,7 +5,7 @@ export const WeatherGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: ${({ theme }) => theme.spacing[200]};
-  padding: ${({ theme }) => theme.spacing[200]} 0;
+  padding-bottom: ${({ theme }) => theme.spacing[200]} 0;
 `;
 
 export const WeatherCard = styled.div`

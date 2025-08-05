@@ -14,3 +14,10 @@ export const StyleButtonsWrapperColumn = styled.div`
   width: fit-content;
   gap: ${({ theme }) => theme.spacing[200]};
 `;
+
+export const StyleHeaderPageWrapper = styled.header`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: ${({ theme }) => theme.spacing[600]};
+  gap: ${({ theme }) => theme.spacing[300]};
+`;

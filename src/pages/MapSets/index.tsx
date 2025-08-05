@@ -6,7 +6,7 @@ import { MainDescription } from "@components/MainDescription";
 import { LoadingScreen } from "@components/LoadingScreen";
 import { useGetGeneralMap } from "@services/hooks/generalMap/useGetGeneralMap";
 import { ErrorScreen } from "@components/ErrorScreen";
-import { StyleButtonsWrapper } from "@styles/StyleComponets";
+import { StyleButtonsWrapper, StyleHeaderPageWrapper } from "@styles/StyleComponets";
 import * as S from "./styles";
 
 const MapSets: React.FC = () => {
@@ -39,7 +39,7 @@ const MapSets: React.FC = () => {
 
   const renderHeader = () => {
     return (
-      <div>
+      <StyleHeaderPageWrapper>
         <MainDescription>
           {generalMap?.content ?? "CARREGANDO DESCRIÇÃO..."}
         </MainDescription>
@@ -65,7 +65,7 @@ const MapSets: React.FC = () => {
             Excluir screenshots
           </Button>
         </StyleButtonsWrapper>
-      </div>
+      </StyleHeaderPageWrapper>
     );
   };
 

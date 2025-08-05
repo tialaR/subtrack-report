@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { MainDescription } from "@components/MainDescription";
 import { ImageGridUploader } from "@components/ImageGridUploader";
-import { StyleButtonsWrapper } from "@styles/StyleComponets";
+import { StyleButtonsWrapper, StyleHeaderPageWrapper } from "@styles/StyleComponets";
 import { Button } from "@components/Button";
 import { useModal } from "@hooks/useModal";
 import { RecordDayPreview } from "./RecordDayPreview";
@@ -154,7 +154,7 @@ const RecordsOfDay: React.FC = () => {
 
   const renderHeader = () => {
     return (
-      <header>
+      <StyleHeaderPageWrapper>
         <MainDescription>
           {"É necessário inserir no mínimo uma imagem e no máximo oito imagens para continuar."?.toUpperCase()}
         </MainDescription>
@@ -194,7 +194,7 @@ const RecordsOfDay: React.FC = () => {
             Excluir todas imagens
           </Button>
         </StyleButtonsWrapper>
-      </header>
+      </StyleHeaderPageWrapper>
     );
   };
 

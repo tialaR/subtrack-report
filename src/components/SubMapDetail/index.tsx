@@ -7,6 +7,7 @@ import type { Point } from "@components/ImageAnnotator/types";
 import { usePatchSubMapById } from "@services/hooks/subMaps/usePatchSubMap";
 import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
 import { useScreenshotGeneralMapStorage } from "@hooks/useScreenshotGeneralMapStorage";
+import { MainTitle } from "@components/MainTitle";
 
 export const SubMapDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,7 +69,7 @@ export const SubMapDetail = () => {
 
   return (
     <div>
-      <h1>{subMap.title}</h1>
+      <MainTitle>Inspeção granular: {subMap.title}</MainTitle>
       {subMap.image && (
         <ImageAnnotator
           key={subMap.id}

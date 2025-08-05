@@ -48,7 +48,6 @@ export const Marker = styled.div`
 export const FloatingToolbarWrapper = styled.div`
   display: flex;
   align-items: center;
-  padding-bottom: ${({ theme }) => theme.spacing[200]};
   position: relative;
   z-index: 100;
 `;
@@ -64,7 +63,6 @@ export const FloatingToolbar = styled.div<{ $hidden: boolean }>`
   align-items: center;
   transform: translateX(${({ $hidden }) => ($hidden ? '-100%' : '0')});
   transition: transform 0.3s ease;
-  padding: ${({ theme }) => theme.spacing[200]} ${({ theme }) => theme.spacing[300]};
   gap: ${({ theme }) => theme.spacing[200]};
   z-index: 100;
 `;

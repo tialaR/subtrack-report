@@ -2,10 +2,8 @@ import styled, { css, keyframes } from 'styled-components';
 
 export const ImageBoxWrapper = styled.div`
   display: flex;
- gap: ${({ theme }) => theme.spacing[500]};
-  margin-top: ${({ theme }) => theme.spacing[400]};
   flex-wrap: wrap;
-  gap: 16px;
+  gap: ${({ theme }) => theme.spacing[350]};
 `;
 
 type ImageBoxProps = {

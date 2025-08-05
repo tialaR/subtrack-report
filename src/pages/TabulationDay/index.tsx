@@ -11,7 +11,7 @@ import { FormLocationMemorized } from "./FormLocationMemorized";
 import { TabulationPreview } from "./TabulationPreview";
 import { useTabulationLocationLogic } from "@services/hooks/tabulationDay/useTabulationLocationLogic";
 import { getWeatherCode } from "@utils/tabulationHelper";
-import { StyleButtonsWrapper } from "@styles/StyleComponets";
+import { StyleButtonsWrapper, StyleHeaderPageWrapper } from "@styles/StyleComponets";
 import * as S from "./styles";
 
 export const TabulationDay = () => {
@@ -60,7 +60,7 @@ export const TabulationDay = () => {
   }, [hasImage]);
 
   const renderHeader = () => (
-    <>
+    <StyleHeaderPageWrapper>
       {!isGeneralLoading ? (
         <MainDescription>
           {tabulationDay?.current_date?.toUpperCase()} - TIMEZONE:{" "}
@@ -101,7 +101,7 @@ export const TabulationDay = () => {
           </Button>
         </StyleButtonsWrapper>
       </TogglePanel>
-    </>
+    </StyleHeaderPageWrapper>
   );
 
   if (isGeneralLoading) {
