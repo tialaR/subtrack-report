@@ -2,24 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import { FiRotateCcw } from "react-icons/fi";
 import { ButtonIcon } from "@components/ButtonIcon";
 import { RotationAnchors } from "@components/RotationAnchors";
-import type { SnapshotBubbleProps } from "./types";
 import * as S from "./styles";
+import type { ScreenshotBubbleProps } from "./types";
 
-const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
-  id,
+const ScreenshotBubble: React.FC<ScreenshotBubbleProps> = ({
   title,
-  snapshot,
+  screenshot,
   wrapperRef,
   initialOffsetIndex,
-  totalSnapshots,
-  onUpdate,
-  onRemove,
+  totalScreenshots,
+  onUpdateScreenshot,
+  onRemoveScreenshot,
 }) => {
   const bubbleRef = useRef<HTMLDivElement>(null);
   const offset = useRef({ x: 0, y: 0 });
 
-  const [rotation, setRotation] = useState(snapshot.rotation ?? 0);
-  const [position, setPosition] = useState({ x: snapshot.x, y: snapshot.y });
+  const [rotation, setRotation] = useState(screenshot.rotation ?? 0);
+  const [position, setPosition] = useState({ x: screenshot.x, y: screenshot.y });
   const [isDragging, setIsDragging] = useState(false);
 
   const isRotating = useRef(false);
@@ -27,9 +26,9 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
   const lastPointerAngleRef = useRef(0);
 
   useEffect(() => {
-    setPosition({ x: snapshot.x, y: snapshot.y });
-    setRotation(snapshot.rotation);
-  }, [snapshot.x, snapshot.y, snapshot.rotation]);
+    setPosition({ x: screenshot.x, y: screenshot.y });
+    setRotation(screenshot.rotation);
+  }, [screenshot.x, screenshot.y, screenshot.rotation]);
 
   const startDrag = (e: React.PointerEvent) => {
     if (!bubbleRef.current) return;
@@ -56,30 +55,19 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
     if (clampedX !== position.x || clampedY !== position.y) {
       setPosition({ x: clampedX, y: clampedY });
       console.log({
-        ...snapshot,
+        ...screenshot,
         x: clampedX,
         y: clampedY,
         rotation,
         is_new_position: false,
       })
-      onUpdate({
-        ...snapshot,
+      onUpdateScreenshot({
+        ...screenshot,
         x: clampedX,
         y: clampedY,
         rotation,
         is_new_position: false,
       });
-
-      // onUpdate({
-      //   id: snapshot.id,
-      //   title: snapshot.title,
-      //   image: snapshot.image,
-      //   x: clampedX,
-      //   y: clampedY,
-      //   rotation,
-      //   timestamp: snapshot.timestamp,
-      //   is_new_position: false,
-      // });
     }
   };
 
@@ -131,8 +119,8 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
     setRotation((prev) => {
       const next = prev + delta;
       if (next !== prev) {
-        onUpdate({
-          ...snapshot,
+        onUpdateScreenshot({
+          ...screenshot,
           rotation: next,
           is_new_position: false,
         });
@@ -147,7 +135,7 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
     window.removeEventListener("pointerup", stopHandleRotation);
   };
 
-  const zIndex = totalSnapshots - initialOffsetIndex;
+  const zIndex = totalScreenshots - initialOffsetIndex;
 
   return (
     <S.BubbleWrapper
@@ -165,12 +153,12 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
           variant="outlined"
           iconType="delete"
           title={`Remover sub-map-${title}`}
-          onClick={onRemove}
+          onClick={onRemoveScreenshot}
           onPointerDown={(e) => e.stopPropagation()}
         />
       </S.BubbleHeader>
 
-      <S.BubbleImage src={snapshot.image} alt={title} />
+      <S.BubbleImage src={screenshot?.image} alt={title} />
 
       <RotationAnchors
         icon={<FiRotateCcw />}
@@ -180,4 +168,4 @@ const SnapshotBubble: React.FC<SnapshotBubbleProps> = ({
   );
 };
 
-export { SnapshotBubble };
+export { ScreenshotBubble };

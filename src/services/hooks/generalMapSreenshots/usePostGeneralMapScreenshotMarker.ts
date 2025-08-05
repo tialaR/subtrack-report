@@ -4,12 +4,12 @@ import { api } from '@services/api';
 import { useToastInfo } from '@hooks/useToastInfo';
 import type { ScreenshotMarker } from './types';
 
-export const usePostGeneralMapScreenshotMarkers = () => {
+export const usePostGeneralMapScreenshotMarker = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const postGeneralMapScreenshotMarkers = async (payload: ScreenshotMarker) => {
+  const postGeneralMapScreenshotMarker = async (payload: ScreenshotMarker) => {
     setLoading(true);
     try {
       const response = await api.post<ScreenshotMarker>('/general_map_screenshot_markers', payload);
@@ -32,5 +32,5 @@ export const usePostGeneralMapScreenshotMarkers = () => {
     }
   };
 
-  return { postGeneralMapScreenshotMarkers, loading, error };
+  return { postGeneralMapScreenshotMarker, loading, error };
 };

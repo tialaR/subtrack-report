@@ -4,28 +4,28 @@ import { api } from '@services/api';
 import { useToastInfo } from '@hooks/useToastInfo';
 import type { ScreenshotMarker } from './types';
 
-export const usePutGeneralMapScreenshotMarkers = () => {
+export const usePatchGeneralMapScreenshotMarkerById = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const putGeneralMapScreenshotMarkers = async (id: string, payload: Partial<ScreenshotMarker>) => {
+  const patchGeneralMapScreenshotMarkerById = async (id: string, payload: Partial<ScreenshotMarker>) => {
     setLoading(true);
     try {
-      const response = await api.put<ScreenshotMarker>(`/general_map_screenshot_markers/${id}`, payload);
+      const response = await api.patch<ScreenshotMarker>(`/general_map_screenshot_markers/${id}`, payload);
       return response.data;
     } catch (err: unknown | AxiosError) {
-      const message = err instanceof AxiosError ? err : 'Erro ao atualizar marcador';
+      const message = err instanceof AxiosError ? err : 'Erro ao atualizar parcialmente';
       setError(message);
       showToast({
         type: 'error',
-        message: 'Erro ao atualizar marcador.',
-        description: 'Verifique os dados e tente novamente.',
+        message: 'Erro ao atualizar parcialmente.',
+        description: 'Tente novamente.',
       });
     } finally {
       setLoading(false);
     }
   };
 
-  return { putGeneralMapScreenshotMarkers, loading, error };
+  return { patchGeneralMapScreenshotMarkerById, loading, error };
 };

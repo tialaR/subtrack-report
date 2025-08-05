@@ -1,13 +1,15 @@
-import { useDeleteGeneralMapScreenshotMarkers } from "./useDeleteGeneralMapScreenshotMarkers";
+import { useDeleteGeneralMapScreenshotMarkerById } from "./useDeleteGeneralMapScreenshotMarkerByID";
 import { useGetGeneralMapScreenshotMarkers } from "./useGetGeneralMapScreenshotMarkers";
-import { usePatchGeneralMapScreenshotMarkers } from "./usePatchGeneralMapScreenshotMarkers";
-import { usePostGeneralMapScreenshotMarkers } from "./usePostGeneralMapScreenshotMarkers";
-import { usePutGeneralMapScreenshotMarkers } from "./usePutGeneralMapScreenshotMarkers";
+import { usePatchGeneralMapScreenshotMarkerById } from "./usePatchGeneralMapScreenshotMarkerById";
+import { usePostGeneralMapScreenshotMarker } from "./usePostGeneralMapScreenshotMarker";
+import { usePutGeneralMapScreenshotMarker } from "./usePutGeneralMapScreenshotMarker";
+import { useDeleAllteGeneralMapScreenshotMarkers } from "./useDeleteAllGeneralMapScreenshotMarkers";
 
 export {
-    useDeleteGeneralMapScreenshotMarkers,
+    useDeleteGeneralMapScreenshotMarkerById,
     useGetGeneralMapScreenshotMarkers,
-    usePatchGeneralMapScreenshotMarkers,
-    usePutGeneralMapScreenshotMarkers,
-    usePostGeneralMapScreenshotMarkers,
+    usePatchGeneralMapScreenshotMarkerById,
+    usePutGeneralMapScreenshotMarker,
+    usePostGeneralMapScreenshotMarker,
+    useDeleAllteGeneralMapScreenshotMarkers 
 }

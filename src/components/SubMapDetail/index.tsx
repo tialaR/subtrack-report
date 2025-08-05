@@ -1,20 +1,18 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useSubMapsContext } from "@hooks/useSubMapsContext";
-import { usePatchGeneralMapScreenshotMarkers } from "@services/hooks/generalMapSreenshots/usePatchGeneralMapScreenshotMarkers";
-import { usePostGeneralMapScreenshotMarkers } from "@services/hooks/generalMapSreenshots/usePostGeneralMapScreenshotMarkers";
 import { ImageAnnotator } from "@components/ImageAnnotator";
 import type { SubMap } from "@services/hooks/subMaps/types";
 import type { Point } from "@components/ImageAnnotator/types";
 import { usePatchSubMapById } from "@services/hooks/subMaps/usePatchSubMap";
 import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
+import { useScreenshotGeneralMapStorage } from "@hooks/useScreenshotGeneralMapStorage";
 
 export const SubMapDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { subMaps, isSubMapsLoading } = useSubMapsContext();
-  const { patchSubMapById, data: subMapUpdated } = usePatchSubMapById();
-  //const { patch } = usePatchGeneralMapScreenshotMarkers();
-  const { postGeneralMapScreenshotMarkers } = usePostGeneralMapScreenshotMarkers();
+  const { patchSubMapById } = usePatchSubMapById();
+  const { saveNewScreenshot } = useScreenshotGeneralMapStorage();
 
   const [subMap, setSubMap] = useState<SubMap | null>(null);
   const [markers, setMarkers] = useState<Point[]>([]);
@@ -31,11 +29,17 @@ export const SubMapDetail = () => {
 
   const onSnapshotReady = async (snapshot: ScreenshotMarker) => {
     if (subMap && subMap?.id === id) {
-      postGeneralMapScreenshotMarkers(snapshot);
+      saveNewScreenshot(snapshot);
     }
   };
 
-  const onUpdateMarkersHistory = ({ markers, markersHistory }: { markers: Point[]; markersHistory: Point[][] }) => {
+  const onUpdateMarkersHistory = ({
+    markers,
+    markersHistory,
+  }: {
+    markers: Point[];
+    markersHistory: Point[][];
+  }) => {
     if (subMap && subMap?.id === id) {
       const payload = {
         ...subMap,

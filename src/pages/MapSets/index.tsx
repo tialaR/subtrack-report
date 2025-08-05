@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { useSnapshotStorage } from "@hooks/useSnapshotStorage";
-import { SnapshotBubbles } from "@components/SnapshotBubbles";
+import { useScreenshotGeneralMapStorage } from "@hooks/useScreenshotGeneralMapStorage";
+import { ScreenshotBubbles } from "@components/ScreenshotBubbles";
 import { Button } from "@components/Button";
 import { MainDescription } from "@components/MainDescription";
 import { LoadingScreen } from "@components/LoadingScreen";
@@ -11,23 +11,23 @@ import * as S from "./styles";
 
 const MapSets: React.FC = () => {
   const {
-    snapshots,
-    updateSnapshot,
-    removeSnapshot,
-    removeAllSnapshots,
-    resetSnapshots,
+    screenshots,
+    updateScreenshot,
+    removeScreenshotById,
+    removeAllScreenshots,
+    resetScreenshotsPosition,
     wrapperRef,
-  } = useSnapshotStorage();
+  } = useScreenshotGeneralMapStorage();
 
   const {
     data: generalMap,
-    loading: generalMapLoading,
-    error: generealMapError,
+    loading: isGeneralMapLoading,
+    error: isGenerealMapError,
     fetchData: getGeneralMap,
   } = useGetGeneralMap();
 
-  const isLoading = !generalMap?.image && generalMapLoading;
-  const isError = generealMapError && !generalMapLoading;
+  const isLoading = !generalMap?.image && isGeneralMapLoading;
+  const isError = isGenerealMapError && !isGeneralMapLoading;
 
   useEffect(() => {
     getGeneralMap();
@@ -50,7 +50,7 @@ const MapSets: React.FC = () => {
             variant="primary"
             showIcon
             iconType="refresh"
-            onClick={resetSnapshots}
+            onClick={resetScreenshotsPosition}
           >
             Redefinir posições
           </Button>
@@ -60,7 +60,7 @@ const MapSets: React.FC = () => {
             variant="secondary"
             showIcon
             iconType="delete"
-            onClick={removeAllSnapshots}
+            onClick={removeAllScreenshots}
           >
             Excluir screenshots
           </Button>
@@ -88,12 +88,12 @@ const MapSets: React.FC = () => {
 
       <S.MapWrapper ref={wrapperRef}>
         <S.MapImage src={generalMap?.image} alt={generalMap?.title} />
-        {snapshots.length > 0 && (
-          <SnapshotBubbles
+        {screenshots?.length > 0 && (
+          <ScreenshotBubbles
             wrapperRef={wrapperRef}
-            snapshots={snapshots}
-            onUpdate={updateSnapshot}
-            onDelete={removeSnapshot}
+            screenshots={screenshots}
+            onUpdateScreenshot={updateScreenshot}
+            onDeleteScreenshot={removeScreenshotById}
           />
         )}
       </S.MapWrapper>
