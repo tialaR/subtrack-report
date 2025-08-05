@@ -343,7 +343,7 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
           <Button
             title="Salvar Atualizações"
             variant="secondary"
-            iconType="map"
+            iconType="upload"
             showIcon
             onClick={handleUpdateImage}
           >

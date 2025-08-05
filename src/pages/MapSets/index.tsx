@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { useScreenshotGeneralMapStorage } from "@hooks/useScreenshotGeneralMapStorage";
 import { ScreenshotBubbles } from "@components/ScreenshotBubbles";
 import { Button } from "@components/Button";
@@ -6,10 +7,18 @@ import { MainDescription } from "@components/MainDescription";
 import { LoadingScreen } from "@components/LoadingScreen";
 import { useGetGeneralMap } from "@services/hooks/generalMap/useGetGeneralMap";
 import { ErrorScreen } from "@components/ErrorScreen";
-import { StyleButtonsWrapper, StyleHeaderPageWrapper } from "@styles/StyleComponets";
+import {
+  StyleButtonsWrapper,
+  StyleHeaderPageWrapper,
+} from "@styles/StyleComponets";
+import { usePostGeneralMapCapture } from "@services/hooks/generalMapCapture";
 import * as S from "./styles";
+import { persistImageWithCanvas } from "@utils/persistImageHelper";
+import { useToastInfo } from "@hooks/useToastInfo";
 
 const MapSets: React.FC = () => {
+  const { showToast } = useToastInfo();
+
   const {
     screenshots,
     updateScreenshot,
@@ -26,6 +35,8 @@ const MapSets: React.FC = () => {
     fetchData: getGeneralMap,
   } = useGetGeneralMap();
 
+  const { postGeneralMapCapture } = usePostGeneralMapCapture();
+
   const isLoading = !generalMap?.image && isGeneralMapLoading;
   const isError = isGenerealMapError && !isGeneralMapLoading;
 
@@ -36,6 +47,31 @@ const MapSets: React.FC = () => {
   // useEffect(() => {
   //   alert(JSON.stringify(snapshots))
   // }, [snapshots])
+  const handlePersist = async () => {
+    const payload = {
+      id: uuidv4(),
+      generated_at: new Date().toLocaleString("pt-BR"),
+    };
+
+    await persistImageWithCanvas({
+      ref: wrapperRef,
+      payload,
+      persistFn: (data) => postGeneralMapCapture(data),
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          message: "Registros do dia capturados com sucesso!",
+        });
+      },
+      onError: () => {
+        showToast({
+          type: "error",
+          message: "Erro ao capturar registros do dia!",
+          description: "Tente novamente.",
+        });
+      },
+    });
+  };
 
   const renderHeader = () => {
     return (
@@ -54,7 +90,15 @@ const MapSets: React.FC = () => {
           >
             Redefinir posições
           </Button>
-
+          <Button
+            title="Excluir todos screenshots"
+            variant="secondary"
+            showIcon
+            iconType="upload"
+            onClick={handlePersist}
+          >
+            Salvar alterações
+          </Button>
           <Button
             title="Excluir todos screenshots"
             variant="secondary"
