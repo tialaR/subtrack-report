@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useScreenshotGeneralMapStorage } from "@hooks/useScreenshotGeneralMapStorage";
 import { ScreenshotBubbles } from "@components/ScreenshotBubbles";
@@ -15,9 +15,11 @@ import { usePostGeneralMapCapture } from "@services/hooks/generalMapCapture";
 import * as S from "./styles";
 import { persistImageWithCanvas } from "@utils/persistImageHelper";
 import { useToastInfo } from "@hooks/useToastInfo";
+import { delay } from "@utils/delayHelper";
 
 const MapSets: React.FC = () => {
   const { showToast } = useToastInfo();
+  const [hideButtonsActions, setHideButtonsActions] = useState(false);
 
   const {
     screenshots,
@@ -44,10 +46,10 @@ const MapSets: React.FC = () => {
     getGeneralMap();
   }, []);
 
-  // useEffect(() => {
-  //   alert(JSON.stringify(snapshots))
-  // }, [snapshots])
   const handlePersist = async () => {
+    setHideButtonsActions(true);
+    await delay(100)
+
     const payload = {
       id: uuidv4(),
       generated_at: new Date().toLocaleString("pt-BR"),
@@ -71,6 +73,8 @@ const MapSets: React.FC = () => {
         });
       },
     });
+
+    setHideButtonsActions(false);
   };
 
   const renderHeader = () => {
@@ -138,6 +142,7 @@ const MapSets: React.FC = () => {
             screenshots={screenshots}
             onUpdateScreenshot={updateScreenshot}
             onDeleteScreenshot={removeScreenshotById}
+            hideButtonsActions={hideButtonsActions}
           />
         )}
       </S.MapWrapper>

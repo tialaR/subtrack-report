@@ -5,4 +5,5 @@ export type ScreenshotBubblesProps = {
   screenshots: ScreenshotMarker[];
   onUpdateScreenshot: (updated: ScreenshotMarker) => void;
   onDeleteScreenshot: (id: string) => void;
+  hideButtonsActions?: boolean;
 };

@@ -8,4 +8,5 @@ export type ScreenshotBubbleProps = {
   totalScreenshots: number;
   onUpdateScreenshot: (updated: ScreenshotMarker) => void;
   onRemoveScreenshot: () => void;
+  hideButtonsActions?: boolean;
 };

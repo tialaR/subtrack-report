@@ -11,6 +11,7 @@ const ScreenshotBubble: React.FC<ScreenshotBubbleProps> = ({
   wrapperRef,
   initialOffsetIndex,
   totalScreenshots,
+  hideButtonsActions = false,
   onUpdateScreenshot,
   onRemoveScreenshot,
 }) => {
@@ -18,7 +19,10 @@ const ScreenshotBubble: React.FC<ScreenshotBubbleProps> = ({
   const offset = useRef({ x: 0, y: 0 });
 
   const [rotation, setRotation] = useState(screenshot.rotation ?? 0);
-  const [position, setPosition] = useState({ x: screenshot.x, y: screenshot.y });
+  const [position, setPosition] = useState({
+    x: screenshot.x,
+    y: screenshot.y,
+  });
   const [isDragging, setIsDragging] = useState(false);
 
   const isRotating = useRef(false);
@@ -60,7 +64,7 @@ const ScreenshotBubble: React.FC<ScreenshotBubbleProps> = ({
         y: clampedY,
         rotation,
         is_new_position: false,
-      })
+      });
       onUpdateScreenshot({
         ...screenshot,
         x: clampedX,
@@ -148,22 +152,26 @@ const ScreenshotBubble: React.FC<ScreenshotBubbleProps> = ({
     >
       <S.BubbleHeader>
         <span>{title}</span>
-        <ButtonIcon
-          size="regular"
-          variant="outlined"
-          iconType="delete"
-          title={`Remover sub-map-${title}`}
-          onClick={onRemoveScreenshot}
-          onPointerDown={(e) => e.stopPropagation()}
-        />
+        {hideButtonsActions && (
+          <ButtonIcon
+            size="regular"
+            variant="outlined"
+            iconType="delete"
+            title={`Remover sub-map-${title}`}
+            onClick={onRemoveScreenshot}
+            onPointerDown={(e) => e.stopPropagation()}
+          />
+        )}
       </S.BubbleHeader>
 
       <S.BubbleImage src={screenshot?.image} alt={title} />
 
-      <RotationAnchors
-        icon={<FiRotateCcw />}
-        onPointerDown={startHandleRotation}
-      />
+      {hideButtonsActions && (
+        <RotationAnchors
+          icon={<FiRotateCcw />}
+          onPointerDown={startHandleRotation}
+        />
+      )}
     </S.BubbleWrapper>
   );
 };

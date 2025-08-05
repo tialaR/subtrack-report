@@ -6,6 +6,7 @@ const ScreenshotBubbles: React.FC<ScreenshotBubblesProps> = ({
   screenshots,
   onUpdateScreenshot,
   onDeleteScreenshot,
+  hideButtonsActions = false
 }) => {
   return (
     <>
@@ -19,6 +20,7 @@ const ScreenshotBubbles: React.FC<ScreenshotBubblesProps> = ({
           totalScreenshots={screenshots?.length}
           onUpdateScreenshot={onUpdateScreenshot}
           onRemoveScreenshot={() => onDeleteScreenshot(screenshot?.id)}
+          hideButtonsActions={hideButtonsActions}
         />
       ))}
     </>
