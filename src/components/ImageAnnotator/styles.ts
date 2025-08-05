@@ -45,28 +45,6 @@ export const Marker = styled.div`
   z-index: 5;
 `;
 
-export const FloatingToolbarWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  position: relative;
-  z-index: 100;
-`;
-
-export const ToggleButtonArea = styled.div`
-  position: relative;
-  z-index: 110;
-`;
-
-export const FloatingToolbar = styled.div<{ $hidden: boolean }>`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  transform: translateX(${({ $hidden }) => ($hidden ? '-100%' : '0')});
-  transition: transform 0.3s ease;
-  gap: ${({ theme }) => theme.spacing[200]};
-  z-index: 100;
-`;
-
 export const MarkerToolboxWrapper = styled.div`
   position: absolute;
   top: ${({ theme }) => theme.spacing[200]};

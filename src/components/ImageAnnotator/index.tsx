@@ -4,13 +4,13 @@ import { v4 as uuidv4 } from "uuid";
 import { MarkerToolbox } from "@components/MarkerToolBox";
 import { MainDescription } from "@components/MainDescription";
 import { Button } from "@components/Button";
-import { ButtonIcon } from "@components/ButtonIcon";
 import { markersOptions } from "@utils/marker";
 import { delay } from "@utils/delayHelper";
 import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
 import type { ImageAnnotatorProps, Point, MarkerOption } from "./types";
 import * as S from "./styles";
 import { StyleHeaderPageWrapper } from "@styles/StyleComponets";
+import { TogglePanel } from "../TogglePanel";
 
 export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   id,
@@ -28,8 +28,6 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   const [selectedMarker, setSelectedMarker] = useState<MarkerOption | null>(
     null
   );
-  const [isToolbarHidden, setIsToolbarHidden] = useState(false);
-  const [manualHide, setManualHide] = useState(false);
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
   const [hideToolbox, setHideToolbox] = useState(false);
 
@@ -50,17 +48,6 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
         return () => img.removeEventListener("load", handleLoad);
       }
     }
-  }, []);
-
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    const handleScroll = () => {
-      setIsToolbarHidden(true);
-      clearTimeout(timeout);
-      timeout = setTimeout(() => setIsToolbarHidden(false), 1200);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const pushToHistory = useCallback((newPoints: Point[]) => {
@@ -289,97 +276,80 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
           {`${title.toLocaleUpperCase()} DE LOCALIZAÇÃO – DETALHAMENTO DOS LOCAIS INSPECIONADOS`}
         </MainDescription>
 
-        <S.FloatingToolbarWrapper>
-          <S.ToggleButtonArea>
-            <ButtonIcon
-              size="large"
-              isToggle
-              title={
-                manualHide
-                  ? "Mostrar barra de ferramentas"
-                  : "Ocultar barra de ferramentas"
-              }
-              variant={manualHide ? "filled" : "outlined"}
-              iconType={manualHide ? "chevronsRight" : "chevronsLeft"}
-              onClick={() => setManualHide((prev) => !prev)}
-            />
-          </S.ToggleButtonArea>
-
-          <S.FloatingToolbar $hidden={isToolbarHidden || manualHide}>
-            <Button
-              title="Zoom In"
-              variant="secondary"
-              iconType="zoomIn"
-              showIcon
-              onClick={zoomIn}
-            >
-              Zoom In
-            </Button>
-            <Button
-              title="Zoom Out"
-              variant="secondary"
-              iconType="zoomOut"
-              showIcon
-              onClick={zoomOut}
-            >
-              Zoom Out
-            </Button>
-            <Button
-              title="Resetar Zoom"
-              variant="secondary"
-              iconType="rotate"
-              showIcon
-              onClick={resetZoom}
-            >
-              Reset Zoom
-            </Button>
-            <Button
-              title="Desfazer Ação"
-              variant="secondary"
-              iconType="cornerBack"
-              showIcon
-              onClick={undoAction}
-            >
-              Desfazer
-            </Button>
-            <Button
-              title="Refazer Ação"
-              variant="secondary"
-              iconType="cornerForward"
-              showIcon
-              onClick={redoAction}
-            >
-              Refazer
-            </Button>
-            <Button
-              title="Limpar Marcadores"
-              variant="secondary"
-              iconType="deleteAlt"
-              showIcon
-              onClick={clearMarkers}
-            >
-              Limpar Marcadores
-            </Button>
-            <Button
-              title="Capturar Snapshot"
-              variant="secondary"
-              iconType="camera"
-              showIcon
-              onClick={handleSnapshot}
-            >
-              Capturar Snapshot
-            </Button>
-            <Button
-              title="Salvar Atualizações"
-              variant="secondary"
-              iconType="map"
-              showIcon
-              onClick={handleUpdateImage}
-            >
-              Salvar Atualizações
-            </Button>
-          </S.FloatingToolbar>
-        </S.FloatingToolbarWrapper>
+        <TogglePanel>
+          <Button
+            title="Zoom In"
+            variant="secondary"
+            iconType="zoomIn"
+            showIcon
+            onClick={zoomIn}
+          >
+            Zoom In
+          </Button>
+          <Button
+            title="Zoom Out"
+            variant="secondary"
+            iconType="zoomOut"
+            showIcon
+            onClick={zoomOut}
+          >
+            Zoom Out
+          </Button>
+          <Button
+            title="Resetar Zoom"
+            variant="secondary"
+            iconType="rotate"
+            showIcon
+            onClick={resetZoom}
+          >
+            Reset Zoom
+          </Button>
+          <Button
+            title="Desfazer Ação"
+            variant="secondary"
+            iconType="cornerBack"
+            showIcon
+            onClick={undoAction}
+          >
+            Desfazer
+          </Button>
+          <Button
+            title="Refazer Ação"
+            variant="secondary"
+            iconType="cornerForward"
+            showIcon
+            onClick={redoAction}
+          >
+            Refazer
+          </Button>
+          <Button
+            title="Limpar Marcadores"
+            variant="secondary"
+            iconType="deleteAlt"
+            showIcon
+            onClick={clearMarkers}
+          >
+            Limpar Marcadores
+          </Button>
+          <Button
+            title="Capturar Snapshot"
+            variant="secondary"
+            iconType="camera"
+            showIcon
+            onClick={handleSnapshot}
+          >
+            Capturar Snapshot
+          </Button>
+          <Button
+            title="Salvar Atualizações"
+            variant="secondary"
+            iconType="map"
+            showIcon
+            onClick={handleUpdateImage}
+          >
+            Salvar Atualizações
+          </Button>
+        </TogglePanel>
       </StyleHeaderPageWrapper>
 
       <S.ImageAnnotatorWrapper
