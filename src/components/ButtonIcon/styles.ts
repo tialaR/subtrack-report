@@ -15,7 +15,7 @@ type StyledProps = {
   $size?: ButtonIconProps['size'];
   $isToggle?: boolean;
   $color?: string;
-  $iconType?: ButtonIconProps['iconType'];
+  $iconType?: keyof typeof import('@utils/iconsHelper').iconMap;
   variant?: ButtonIconProps['variant'];
   isLoading?: boolean;
   showLoadingOverlay?: boolean;

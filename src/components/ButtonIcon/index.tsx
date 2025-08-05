@@ -1,6 +1,6 @@
-import { FiTrash2, FiRefreshCcw } from 'react-icons/fi';
 import { IconButton, LoaderSkeleton } from './styles';
 import type { ButtonIconProps } from './types';
+import { iconMap } from '@utils/iconsHelper';
 
 export const ButtonIcon: React.FC<ButtonIconProps> = ({
   iconType,
@@ -12,17 +12,8 @@ export const ButtonIcon: React.FC<ButtonIconProps> = ({
   color,
   ...rest
 }) => {
-  const renderIcon = () => {
-    switch (iconType) {
-      case 'delete':
-        return <FiTrash2 />;
-      case 'refresh':
-        return <FiRefreshCcw />;
-      default:
-        return null;
-    }
-  };
-
+  const IconComponent = iconType && iconMap[iconType];
+  
   return (
     <IconButton
       type="button"
@@ -39,7 +30,7 @@ export const ButtonIcon: React.FC<ButtonIconProps> = ({
       {isLoading ? (
         <LoaderSkeleton />
       ) : (
-        renderIcon()
+        <>{IconComponent && <IconComponent aria-hidden />}</>
       )}
     </IconButton>
   );
