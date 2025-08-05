@@ -50,7 +50,7 @@ export const TabulationDay = () => {
         children: (
           <TabulationPreview
             title={tabulationDay.title ?? ""}
-            date={tabulationDay.current_date ?? ""}
+            date={tabulationDay.current_date_full ?? ""}
             timezone={tabulationDay.timezone ?? ""}
             image={tabulationDay.image ?? ""}
           />
@@ -63,7 +63,7 @@ export const TabulationDay = () => {
     <StyleHeaderPageWrapper>
       {!isGeneralLoading ? (
         <MainDescription>
-          {tabulationDay?.current_date?.toUpperCase()} - TIMEZONE:{" "}
+          {tabulationDay?.current_date_full?.toUpperCase()} - TIMEZONE:{" "}
           {tabulationDay.timezone?.toUpperCase()}
         </MainDescription>
       ) : (

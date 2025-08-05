@@ -13,14 +13,14 @@ export const useGetSubMaps = () => {
   const getSubMaps = async () => {
     setLoading(true);
     try {
-      const response = await api.get<SubMap[]>('/sub_maps');
+      const response = await api.get<SubMap[]>('/submaps');
       setData(response.data);
     } catch (err: unknown | AxiosError) {
-      const message = err instanceof AxiosError ? err : 'Erro ao carregar sub-mapas';
+      const message = err instanceof AxiosError ? err : 'Erro ao carregar submapas';
       setError(message);
       showToast({
         type: 'error',
-        message: 'Erro ao carregar sub-mapas.',
+        message: 'Erro ao carregar submapas.',
         description: 'Tente novamente.',
       });
     } finally {

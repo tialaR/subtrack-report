@@ -12,14 +12,14 @@ export const usePutSubMapById = () => {
   const putSubMapById = async (id: string, payload: SubMap) => {
     setLoading(true);
     try {
-      const response = await api.put<SubMap>(`/sub_maps/${id}`, payload);
+      const response = await api.put<SubMap>(`/submaps/${id}`, payload);
       return response.data;
     } catch (err: unknown | AxiosError) {
-      const message = err instanceof AxiosError ? err : 'Erro ao atualizar sub-mapa';
+      const message = err instanceof AxiosError ? err : 'Erro ao atualizar submapa';
       setError(message);
       showToast({
         type: 'error',
-        message: 'Erro ao atualizar sub-mapa.',
+        message: 'Erro ao atualizar submapa.',
         description: 'Verifique os dados e tente novamente.',
       });
     } finally {

@@ -13,7 +13,7 @@ export const usePatchSubMapById = () => {
   const patchSubMapById = async (id: string, payload: Partial<SubMap>) => {
     setLoading(true);
     try {
-      const response = await api.patch<SubMap>(`/sub_maps/${id}`, payload);
+      const response = await api.patch<SubMap>(`/submaps/${id}`, payload);
       return response.data;
       setData(data);
     } catch (err: unknown | AxiosError) {

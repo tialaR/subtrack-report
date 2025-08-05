@@ -13,16 +13,16 @@ export const usePostSubMap = () => {
   const postSubMap = async (payload: SubMap): Promise<SubMap | undefined> => {
     setLoading(true);
     try {
-      const response = await api.post<SubMap>('/sub_maps', payload);
+      const response = await api.post<SubMap>('/submaps', payload);
       showToast({ type: "success", message: "Sub mapa criado com sucesso!" });
       setData(response.data);
       return response.data; 
     } catch (err: unknown | AxiosError) {
-      const message = err instanceof AxiosError ? err : 'Erro ao criar sub-mapa';
+      const message = err instanceof AxiosError ? err : 'Erro ao criar submapa';
       setError(message);
       showToast({
         type: 'error',
-        message: 'Erro ao criar sub-mapa.',
+        message: 'Erro ao criar submapa.',
         description: 'Verifique os dados e tente novamente.',
       });
     } finally {

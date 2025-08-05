@@ -11,13 +11,13 @@ export const useDeleteSubMapById = () => {
   const deleteSubMapById = async (id: string) => {
     setLoading(true);
     try {
-      await api.delete(`/sub_maps/${id}`);
+      await api.delete(`/submaps/${id}`);
     } catch (err: unknown | AxiosError) {
-      const message = err instanceof AxiosError ? err : 'Erro ao deletar sub-mapa';
+      const message = err instanceof AxiosError ? err : 'Erro ao deletar submapa';
       setError(message);
       showToast({
         type: 'error',
-        message: 'Erro ao deletar sub-mapa.',
+        message: 'Erro ao deletar submapa.',
         description: 'Tente novamente.',
       });
     } finally {

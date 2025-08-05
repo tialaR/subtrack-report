@@ -3,7 +3,7 @@ import { typographyPreset } from '@styles/typographyPreset';
 
 export const WeatherGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: ${({ theme }) => theme.spacing[200]};
   padding-bottom: ${({ theme }) => theme.spacing[200]} 0;
 `;

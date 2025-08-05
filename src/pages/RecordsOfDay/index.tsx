@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { MainDescription } from "@components/MainDescription";
 import { ImageGridUploader } from "@components/ImageGridUploader";
-import { StyleButtonsWrapper, StyleHeaderPageWrapper } from "@styles/StyleComponets";
+import {
+  StyleButtonsWrapper,
+  StyleHeaderPageWrapper,
+} from "@styles/StyleComponets";
 import { Button } from "@components/Button";
 import { useModal } from "@hooks/useModal";
 import { RecordDayPreview } from "./RecordDayPreview";
@@ -15,15 +18,22 @@ import { useGetRecordsDay } from "@services/hooks/recordsDay/useGetRecordsDay";
 import { useDeleteAllRecordsDay } from "@services/hooks/recordsDay/useDeleteAllRecordsDay";
 import { usePatchRecordDay } from "@services/hooks/recordsDay/usePatchRecordDay";
 import { useDeleteRecordsDayPreview } from "@services/hooks/recordsDay/useDeleteRecordsDayPreviewById";
-import { useRecordDayCapture } from "@services/hooks/recordsDay/useRecordDayCapture";
 import { fileToBase64 } from "@utils/fileToBase64Helper";
-import type { RecordDay } from "@services/hooks/recordsDay/types";
+import { persistImageWithCanvas } from "@utils/persistImageHelper";
+import { useToastInfo } from "@hooks/useToastInfo";
+import { usePostRecordsDayPreview } from "@services/hooks/recordsDay/usePostRecordsDayPreview";
 import { delay } from "@utils/delayHelper";
+import type { RecordDay } from "@services/hooks/recordsDay/types";
 import * as S from "./styles";
 
 const MAX_IMAGES = 8;
 
 const RecordsOfDay: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { showToast } = useToastInfo();
+
+  const { postRecordDayPreview } = usePostRecordsDayPreview();
   const {
     data: recordsDay,
     loading: isRecordsDayLoading,
@@ -40,7 +50,6 @@ const RecordsOfDay: React.FC = () => {
     loading: isRecordsDayPreviewLoading,
   } = useGetRecordsDayPreview();
   const { deleteRecordsDayPreview } = useDeleteRecordsDayPreview();
-  const { containerRef, handlePersist } = useRecordDayCapture();
 
   const { openModal, createModal } = useModal();
 
@@ -84,15 +93,46 @@ const RecordsOfDay: React.FC = () => {
   useEffect(() => {
     if (hasRecordsDayImages) {
       createModal({
-        size: "large",
+        size: "medium",
         children: (
-          <RecordDayPreview ref={containerRef} recordsDay={recordsDay} />
+          <S.PrevieContainer>
+            <S.PreviewTitle>Registros do dia</S.PreviewTitle>
+            <RecordDayPreview recordsDay={recordsDay} />
+          </S.PrevieContainer>
         ),
       });
     }
-  }, [hasRecordsDayImages]);
+  }, [hasRecordsDayImages, recordsDay, containerRef]);
 
   const refresh = () => setRefreshTrigger((prev) => prev + 1);
+
+  const handlePersist = async () => {
+    const payload = {
+      id: uuidv4(),
+      generated_at: new Date().toLocaleString("pt-BR"),
+    };
+
+    await delay(100); // Adiciona um pequeno delay no clique
+
+    await persistImageWithCanvas({
+      ref: containerRef,
+      payload,
+      persistFn: (data) => postRecordDayPreview(data),
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          message: "Registros do dia capturados com sucesso!",
+        });
+      },
+      onError: () => {
+        showToast({
+          type: "error",
+          message: "Erro ao capturar registros do dia!",
+          description: "Tente novamente.",
+        });
+      },
+    });
+  };
 
   const handleAddImage = async (file?: File) => {
     if (!file) return;
@@ -147,9 +187,10 @@ const RecordsOfDay: React.FC = () => {
 
   const handleGenerateAndCapture = async () => {
     setRenderHiddenPreview(true);
-    await delay(100); // Adiciona um pequeno delay no clique
+    await delay(100); // pequeno delay para garantir que o DOM seja montado
     await handlePersist();
     getRecordsDayPreview();
+    setRenderHiddenPreview(false);
   };
 
   const renderHeader = () => {
@@ -238,20 +279,13 @@ const RecordsOfDay: React.FC = () => {
         />
         {showMaxLimit && (
           <S.Message>
-            VOCÊ ATINGIU 0 LIMITE MÁXIMO DE IMAGENS PARA GERAR OS REGISTROS DO DIA!
+            VOCÊ ATINGIU 0 LIMITE MÁXIMO DE IMAGENS PARA GERAR OS REGISTROS DO
+            DIA!
           </S.Message>
         )}
       </S.Container>
 
-      {renderHiddenPreview && (
-        <div style={{ position: "absolute", top: -9999, left: -9999 }}>
-          <RecordDayPreview
-            ref={containerRef}
-            recordsDay={recordsDay}
-            isHidden
-          />
-        </div>
-      )}
+      <RecordDayPreview ref={containerRef} recordsDay={recordsDay} isHidden />
     </>
   );
 };

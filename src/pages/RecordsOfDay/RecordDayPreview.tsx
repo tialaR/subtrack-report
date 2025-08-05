@@ -1,36 +1,36 @@
 import { forwardRef } from "react";
-import type { RecordDay } from "@services/hooks/recordsDay/types";
+import type { RecordDayPreviewProps } from "@services/hooks/recordsDay/types";
 import * as S from "./styles";
-
-export type RecordDayPreviewProps = {
-  recordsDay: RecordDay[];
-  isHidden?: boolean; // controla visibilidade para renderização oculta
-};
 
 export const RecordDayPreview = forwardRef<
   HTMLDivElement,
   RecordDayPreviewProps
 >(({ recordsDay, isHidden = false }, ref) => {
+  const hiddenStyles: React.CSSProperties = {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    width: "auto",
+    height: "auto",
+    opacity: 0,
+    pointerEvents: "none",
+    zIndex: -1,
+  };
+
   return (
-    <S.PreviewWrapper
-      ref={ref}
-      style={
-        isHidden
-          ? { visibility: "hidden", position: "absolute", top: 0, left: 0 }
-          : {}
-      }
-    >
-      <S.PreviewTitle>Registros do dia</S.PreviewTitle>
-      <S.ImageBoxWrapper>
-        {recordsDay?.map((record) => (
-          <div key={record?.id}>
-            <S.ImageBox>
-              <S.PreviewImage src={record?.image} alt={record?.title} />
-            </S.ImageBox>
-          </div>
-        ))}
-      </S.ImageBoxWrapper>
-    </S.PreviewWrapper>
+    <div style={isHidden ? hiddenStyles : undefined}>
+      <S.PreviewWrapper ref={ref}>
+        <S.ImageBoxWrapper>
+          {recordsDay?.map((record) => (
+            <div key={record?.id}>
+              <S.ImageBox>
+                <S.PreviewImage src={record?.image} alt={record?.title} />
+              </S.ImageBox>
+            </div>
+          ))}
+        </S.ImageBoxWrapper>
+      </S.PreviewWrapper>
+    </div>
   );
 });
 

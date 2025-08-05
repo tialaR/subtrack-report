@@ -12,9 +12,13 @@ export const ModalOverlay = styled.div`
 `;
 
 const sizeMap = {
-  regular: css`
+  small: css`
     width: 40%;
     height: 40%;
+  `,
+  regular: css`
+    width: 50%;
+    height: 50%;
   `,
   medium: css`
     width: 60%;

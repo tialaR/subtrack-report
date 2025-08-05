@@ -4,8 +4,8 @@ export type RecordDay = {
   image: string;
 };
 
-export type RecordDayPreview = {
-  id: string;
-  generated_at: string;
-  image: string;
+
+export type RecordDayPreviewProps = {
+  recordsDay: RecordDay[];
+  isHidden?: boolean;
 }
