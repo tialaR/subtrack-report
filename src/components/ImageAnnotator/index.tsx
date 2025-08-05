@@ -19,7 +19,8 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   title,
   image,
   markers,
-  updateMarkers,
+  markersHistory,
+  onUpdateMarkersHistory,
   onSnapshotReady,
   onUpdateImage,
 }) => {
@@ -64,38 +65,77 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const pushToHistory = useCallback(
-    (newPoints: Point[]) => {
-      setHistory((prev): Point[][] => [...prev, markers || []]);
-      setRedoStack([]);
-      updateMarkers(newPoints);
-    },
-    [markers, updateMarkers]
-  );
+  const pushToHistory = useCallback((newPoints: Point[]) => {
+    setHistory((prev): Point[][] => {
+      onUpdateMarkersHistory({
+        markers: newPoints,
+        markersHistory: [...prev, newPoints || []],
+      });
+
+      return [...prev, newPoints || []];
+    });
+    setRedoStack((redo): Point[][] => {
+      return [newPoints, ...redo];
+    });
+  }, []);
+
+  const initializedRef = useRef(false);
 
   useEffect(() => {
-    if (id && markers) {
-      pushToHistory([[...markers]]); // Alimenta histórico com o estado inicial vindo do servidor
-    }
-  }, [markers, id]);
+    const hasValidHistory = markersHistory && markersHistory.length > 0;
+    const hasValidMarkers = markers && markers.length > 0;
+
+    if (initializedRef.current || (!hasValidHistory && !hasValidMarkers))
+      return;
+
+    initializedRef.current = true;
+
+    const initialHistory = hasValidHistory ? markersHistory : [[...markers]];
+
+    setHistory(initialHistory);
+    setRedoStack([]); // inicia redo vazio ao montar
+    onUpdateMarkersHistory({
+      markers,
+      markersHistory: initialHistory,
+    });
+  }, [markers, markersHistory, onUpdateMarkersHistory]);
 
   const undoAction = useCallback(() => {
-    if (history.length === 0) return;
-    const last = history[history.length - 1];
-    setRedoStack((r): Point[][] => [markers, ...r]);
-    updateMarkers(last);
-    alert(JSON.stringify(last));
-    setHistory((h): Point[][] => h.slice(0, -1));
-  }, [history, markers, updateMarkers]);
+    const isNullArray =
+      Array.isArray(markersHistory) &&
+      markersHistory.every((item) => item === null);
+
+    if (isNullArray) return;
+
+    const newRedoStack = [markers, ...redoStack];
+    const newHistory = history.slice(0, -1);
+    const newMarkers = history[history.length - 2];
+
+    setRedoStack(newRedoStack);
+    setHistory(newHistory);
+
+    // Atualiza backend imediatamente
+    onUpdateMarkersHistory({
+      markers: newMarkers,
+      markersHistory: newHistory,
+    });
+  }, [history, redoStack, markers, onUpdateMarkersHistory]);
 
   const redoAction = useCallback(() => {
     if (redoStack.length === 0) return;
+
     const [next, ...rest] = redoStack;
-    setHistory((h): Point[][] => [...h, markers]);
-    alert(JSON.stringify(next));
-    updateMarkers(next);
+    const newHistory = [...history, next];
+
+    setHistory(newHistory);
     setRedoStack(rest);
-  }, [redoStack, markers, updateMarkers]);
+
+    // Atualiza backend imediatamente
+    onUpdateMarkersHistory({
+      markers: next,
+      markersHistory: newHistory,
+    });
+  }, [redoStack, history, onUpdateMarkersHistory]);
 
   const clearMarkers = useCallback(() => pushToHistory([]), [pushToHistory]);
 
@@ -163,7 +203,7 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
     const dataURL = canvas.toDataURL();
 
     const snapshotImg = dataURL;
-    onUpdateImage({ image: snapshotImg});
+    onUpdateImage({ image: snapshotImg });
 
     setHideToolbox(false); // Restaura toolbox
   }, [markers, id, onUpdateImage]);

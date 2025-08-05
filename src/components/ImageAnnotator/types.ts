@@ -32,7 +32,8 @@ export type ImageAnnotatorProps = {
   title: string;
   image: string;
   markers?: Point[];
-  updateMarkers: (newMarkers: Point[]) => void;
+  markersHistory?: Point[][];
+  onUpdateMarkersHistory: ({ markers, markersHistory }: { markers: Point[], markersHistory: Point[][] }) => void;
   onSnapshotReady: (imageAnnotatorData: ImageAnnotatorData) => void;
   onUpdateImage: ({ image }: { image: string }) => void;
 };

@@ -1,13 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
-import { FiMove } from 'react-icons/fi';
-import type { MarkersOption, MarkerToolboxProps } from './types';
-import * as S from './styles';
+import { useEffect, useRef, useState } from "react";
+import { FiMove } from "react-icons/fi";
+import type { MarkersOption, MarkerToolboxProps } from "./types";
+import * as S from "./styles";
 
 const MarkerToolbox: React.FC<MarkerToolboxProps> = ({
   markersOptions,
   onSelectMarker,
 }) => {
-  const [currentMarker, setCurrentMarker] = useState<MarkersOption | null>(null);
+  const [currentMarker, setCurrentMarker] = useState<MarkersOption | null>(
+    null
+  );
   const [toolbarPos, setToolbarPos] = useState({ x: 16, y: 60 });
   const [showToolbar, setShowToolbar] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -24,12 +26,13 @@ const MarkerToolbox: React.FC<MarkerToolboxProps> = ({
     dragDistance.current = 0;
     offset.current = {
       x: e.clientX - toolbarPos.x,
-      y: e.clientY - toolbarPos.y
+      y: e.clientY - toolbarPos.y,
     };
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (!dragging || !toolboxRef.current || !toolboxRef.current.parentElement) return;
+    if (!dragging || !toolboxRef.current || !toolboxRef.current.parentElement)
+      return;
 
     const parent = toolboxRef.current.parentElement;
     const newX = e.clientX - offset.current.x;
@@ -47,7 +50,7 @@ const MarkerToolbox: React.FC<MarkerToolboxProps> = ({
 
     setToolbarPos({
       x: Math.max(0, Math.min(newX, maxX)),
-      y: Math.max(0, Math.min(newY, maxY))
+      y: Math.max(0, Math.min(newY, maxY)),
     });
   };
 
@@ -56,11 +59,11 @@ const MarkerToolbox: React.FC<MarkerToolboxProps> = ({
   };
 
   useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [dragging]);
 
@@ -69,25 +72,30 @@ const MarkerToolbox: React.FC<MarkerToolboxProps> = ({
   };
 
   return (
-    <S.ToolbarWrapper title="Marcadores" ref={toolboxRef} style={{ left: toolbarPos.x, top: toolbarPos.y }}>
+    <S.ToolbarWrapper
+      onClick={(e) => e.stopPropagation()}
+      title="Marcadores"
+      ref={toolboxRef}
+      style={{ left: toolbarPos.x, top: toolbarPos.y }}
+    >
       <S.ToolbarWrapperButtons>
         <S.IconButton onMouseDown={handleMouseDown}>
           <FiMove />
         </S.IconButton>
 
-          <S.ToolbarToggle onClick={handleToggleToolbar}>
-            <div>
-              Marcadores
-              {currentMarker?.value && (
-                <S.ColorDot
-                  style={{
-                    backgroundColor: currentMarker?.value,
-                    border: currentMarker?.value 
-                  }}
-                />
-              )}
-            </div>
-          </S.ToolbarToggle>
+        <S.ToolbarToggle onClick={handleToggleToolbar}>
+          <div>
+            Marcadores
+            {currentMarker?.value && (
+              <S.ColorDot
+                style={{
+                  backgroundColor: currentMarker?.value,
+                  border: currentMarker?.value,
+                }}
+              />
+            )}
+          </div>
+        </S.ToolbarToggle>
       </S.ToolbarWrapperButtons>
 
       {showToolbar && (
@@ -96,14 +104,24 @@ const MarkerToolbox: React.FC<MarkerToolboxProps> = ({
             {markersOptions?.map((markerOption) => (
               <S.ColorRow
                 key={markerOption?.value}
-                onClick={() =>{ 
-                  onSelectMarker(currentMarker?.value === markerOption.value ? currentMarker : markerOption);
-                  setCurrentMarker(prev =>  prev?.value === markerOption.value ? prev : markerOption);
-                }}>
+                onClick={() => {
+                  onSelectMarker(
+                    currentMarker?.value === markerOption.value
+                      ? currentMarker
+                      : markerOption
+                  );
+                  setCurrentMarker((prev) =>
+                    prev?.value === markerOption.value ? prev : markerOption
+                  );
+                }}
+              >
                 <S.ColorDot
                   style={{
                     backgroundColor: markerOption.value,
-                    border: currentMarker?.value === markerOption.value ? '2px solid black' : '1px solid #999'
+                    border:
+                      currentMarker?.value === markerOption.value
+                        ? "2px solid black"
+                        : "1px solid #999",
                   }}
                 />
                 <S.ColorLabel>{markerOption.label}</S.ColorLabel>

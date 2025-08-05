@@ -9,6 +9,7 @@ export type SubMap = {
   title: string;
   image: string; // base64 da imagem original
   markers?: Point[];
+  marker_history?: Point[][];
   uploaded?: boolean;
 }
 

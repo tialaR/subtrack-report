@@ -17,14 +17,14 @@ export const SubMapDetail = () => {
 
   const [subMap, setSubMap] = useState<SubMap | null>(null);
   const [markers, setMarkers] = useState<Point[]>([]);
+  const [markerHistory, setMarkerHistory] = useState<Point[][]>([]);
 
   useEffect(() => {
     const found = subMaps.find((s) => s.id === id);
     if (found) {
       setSubMap(found);
-      if (found.markers && found.markers.length > 0) {
-        setMarkers(found.markers); // carrega os markers salvos, se houver
-      }
+      setMarkers(found.markers || []);
+      setMarkerHistory(found.marker_history || []);
     }
   }, [subMaps, id]);
 
@@ -56,14 +56,15 @@ export const SubMapDetail = () => {
     }
   };
 
-  const handleUpdateMarkers = (newMarkers: Point[]) => {
-    // Sempre que mudar de rota e houver markers, salva o estado atual no JSON Server
+  const handleUpdateMarkersHistory = ({ markers, markersHistory }: { markers: Point[]; markersHistory: Point[][] }) => {
     if (subMap && subMap?.id === id) {
       const payload = {
         ...subMap,
-        markers: newMarkers,
+        markers,
+        marker_history: markersHistory,
       };
-      setMarkers(newMarkers);
+      setMarkers(markers);
+      setMarkerHistory(markersHistory);
       patchSubMapById(subMap?.id, payload);
     }
   };
@@ -72,9 +73,8 @@ export const SubMapDetail = () => {
     // Sempre que mudar de rota e houver markers, salva o estado atual no JSON Server
     if (subMap && subMap?.id === id) {
       const payload = {
-        ...subMap,
+        id: subMap?.id,
         image,
-        markers: [],
       };
       patchSubMapById(subMap?.id, payload);
       // TO-DO - Disparar mensagem de sucesso aqui
@@ -93,7 +93,8 @@ export const SubMapDetail = () => {
           title={subMap.title}
           image={subMap.image}
           markers={markers}
-          updateMarkers={handleUpdateMarkers}
+          markersHistory={markerHistory}
+          onUpdateMarkersHistory={handleUpdateMarkersHistory}
           onSnapshotReady={onSnapshotReady}
           onUpdateImage={onUpdateImage}
         />
