@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { AxiosError } from 'axios';
 import { api } from '@services/api';
 import { useToastInfo } from '@hooks/useToastInfo';
-import type { GeneralMapScreenshotMarker } from './types';
+import type { ScreenshotMarker } from './types';
 
 export const usePutGeneralMapScreenshotMarkers = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
 
-  const update = async (id: string, payload: GeneralMapScreenshotMarker) => {
+  const update = async (id: string, payload: Partial<ScreenshotMarker>) => {
     setLoading(true);
     try {
-      const response = await api.put<GeneralMapScreenshotMarker>(`/general_map_screenshot_markers/${id}`, payload);
+      const response = await api.put<ScreenshotMarker>(`/general_map_screenshot_markers/${id}`, payload);
       return response.data;
     } catch (err: unknown | AxiosError) {
       const message = err instanceof AxiosError ? err : 'Erro ao atualizar marcador';

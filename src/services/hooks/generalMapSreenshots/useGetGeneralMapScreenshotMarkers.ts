@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { AxiosError } from 'axios';
 import { api } from '@services/api';
 import { useToastInfo } from '@hooks/useToastInfo';
-import type { GeneralMapScreenshotMarker } from './types';
+import type { ScreenshotMarker } from './types';
 
 export const useGetGeneralMapScreenshotMarkers = () => {
-  const [data, setData] = useState<GeneralMapScreenshotMarker[]>([]);
+  const [data, setData] = useState<ScreenshotMarker[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<AxiosError | string>('');
   const { showToast } = useToastInfo();
@@ -13,7 +13,7 @@ export const useGetGeneralMapScreenshotMarkers = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await api.get<GeneralMapScreenshotMarker[]>('/general_map_screenshot_markers');
+      const response = await api.get<ScreenshotMarker[]>('/general_map_screenshot_markers');
       setData(response.data);
     } catch (err: unknown | AxiosError) {
       const message = err instanceof AxiosError ? err : 'Erro ao carregar marcadores';

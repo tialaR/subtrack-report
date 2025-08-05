@@ -7,13 +7,14 @@ import { ImageAnnotator } from "@components/ImageAnnotator";
 import type { SubMap } from "@services/hooks/subMaps/types";
 import type { Point } from "@components/ImageAnnotator/types";
 import { usePatchSubMapById } from "@services/hooks/subMaps/usePatchSubMap";
+import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
 
 export const SubMapDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { subMaps, isSubMapsLoading } = useSubMapsContext();
   const { patchSubMapById, data: subMapUpdated } = usePatchSubMapById();
-  const { patch } = usePatchGeneralMapScreenshotMarkers();
-  const { create } = usePostGeneralMapScreenshotMarkers();
+  //const { patch } = usePatchGeneralMapScreenshotMarkers();
+  const { postGeneralMapScreenshotMarkers } = usePostGeneralMapScreenshotMarkers();
 
   const [subMap, setSubMap] = useState<SubMap | null>(null);
   const [markers, setMarkers] = useState<Point[]>([]);
@@ -28,35 +29,13 @@ export const SubMapDetail = () => {
     }
   }, [subMaps, id]);
 
-  const onSnapshotReady = async (snapshot: any) => {
-    if (!subMap) return;
-
-    const payload = {
-      ...snapshot,
-      subMapId: subMap.id,
-      title: subMap.title,
-    };
-
-    try {
-      // 1. Salva o snapshot na rota geral
-      await create(payload);
-
-      // 2. Atualiza a imagem no objeto do subMap e persiste
-      const updatedSubMap: SubMap = {
-        ...subMap,
-        image: snapshot.snapshotImg,
-      };
-
-      await patch(subMap?.id, payload);
-
-      setSubMap(updatedSubMap);
-      console.log("Snapshot salvo e subMap atualizado com sucesso");
-    } catch (err) {
-      console.error("Erro ao salvar snapshot e atualizar subMap:", err);
+  const onSnapshotReady = async (snapshot: ScreenshotMarker) => {
+    if (subMap && subMap?.id === id) {
+      postGeneralMapScreenshotMarkers(snapshot);
     }
   };
 
-  const handleUpdateMarkersHistory = ({ markers, markersHistory }: { markers: Point[]; markersHistory: Point[][] }) => {
+  const onUpdateMarkersHistory = ({ markers, markersHistory }: { markers: Point[]; markersHistory: Point[][] }) => {
     if (subMap && subMap?.id === id) {
       const payload = {
         ...subMap,
@@ -94,7 +73,7 @@ export const SubMapDetail = () => {
           image={subMap.image}
           markers={markers}
           markersHistory={markerHistory}
-          onUpdateMarkersHistory={handleUpdateMarkersHistory}
+          onUpdateMarkersHistory={onUpdateMarkersHistory}
           onSnapshotReady={onSnapshotReady}
           onUpdateImage={onUpdateImage}
         />

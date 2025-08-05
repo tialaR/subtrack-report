@@ -5,14 +5,15 @@ import { MarkerToolbox } from "@components/MarkerToolBox";
 import { MainDescription } from "@components/MainDescription";
 import { Button } from "@components/Button";
 import { ButtonIcon } from "@components/ButtonIcon";
+import { markersOptions } from "@utils/marker";
+import { delay } from "@utils/delayHelper";
+import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
 import type {
   ImageAnnotatorProps,
   Point,
   MarkerOption,
-  ImageAnnotatorData,
 } from "./types";
 import * as S from "./styles";
-import { markersOptions } from "@utils/marker";
 
 export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   id,
@@ -91,7 +92,6 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
     initializedRef.current = true;
 
     const initialHistory = hasValidHistory ? markersHistory : [[...markers]];
-
     setHistory(initialHistory);
     setRedoStack([]); // inicia redo vazio ao montar
     onUpdateMarkersHistory({
@@ -101,11 +101,7 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
   }, [markers, markersHistory, onUpdateMarkersHistory]);
 
   const undoAction = useCallback(() => {
-    const isNullArray =
-      Array.isArray(markersHistory) &&
-      markersHistory.every((item) => item === null);
-
-    if (isNullArray) return;
+    if ([markersHistory].length === 0) return;  
 
     const newRedoStack = [markers, ...redoStack];
     const newHistory = history.slice(0, -1);
@@ -163,6 +159,9 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
       Math.max(...markers.map((p) => p.y)) * scale + marginY
     );
 
+    setHideToolbox(true); // Esconde toolbox
+    await delay(100); // Espera o DOM atualizar
+
     const canvas = await html2canvas(renderAreaRef.current, {
       x: minX,
       y: minY,
@@ -175,25 +174,27 @@ export const ImageAnnotator: React.FC<ImageAnnotatorProps> = ({
     const dataURL = canvas.toDataURL();
     const timestamp = Date.now();
 
-    const snapshot: ImageAnnotatorData = {
-      id: id || uuidv4(),
+    const snapshot: ScreenshotMarker = {
+      id: uuidv4(),
+      title: title,
       x: minX,
       y: minY,
       rotation: 0,
-      snapshotImg: dataURL,
+      image: dataURL,
       timestamp,
-      isNewPosition: true,
+      is_new_position: true,
     };
 
     onSnapshotReady(snapshot);
-  }, [markers, scale, id, onSnapshotReady]);
+
+    setHideToolbox(false); // Restaura toolbox
+  }, [markers, title, scale, onSnapshotReady]);
 
   const handleUpdateImage = useCallback(async () => {
     if (!renderAreaRef.current || markers.length === 0) return;
 
     setHideToolbox(true); // Esconde toolbox
-
-    await new Promise((r) => setTimeout(r, 100)); // Espera o DOM atualizar
+    await delay(100); // Espera o DOM atualizar
 
     const canvas = await html2canvas(renderAreaRef.current, {
       backgroundColor: null,

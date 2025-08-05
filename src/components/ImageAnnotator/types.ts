@@ -1,12 +1,4 @@
-export type ImageAnnotatorData = {
-  id: string;
-  x: number;
-  y: number;
-  rotation: number;
-  snapshotImg: string;
-  timestamp: number;
-  isNewPosition: boolean;
-};
+import type { ScreenshotMarker } from "@services/hooks/generalMapSreenshots/types";
 
 export type Point = {
   x: number;
@@ -34,6 +26,6 @@ export type ImageAnnotatorProps = {
   markers?: Point[];
   markersHistory?: Point[][];
   onUpdateMarkersHistory: ({ markers, markersHistory }: { markers: Point[], markersHistory: Point[][] }) => void;
-  onSnapshotReady: (imageAnnotatorData: ImageAnnotatorData) => void;
+  onSnapshotReady: (screenshotMarker: ScreenshotMarker) => void;
   onUpdateImage: ({ image }: { image: string }) => void;
 };
